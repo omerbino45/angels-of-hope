@@ -122,6 +122,18 @@ function ItemContent({ item }: { item: LetterItem }) {
   )
 }
 
+const itemCenter = (el: Element) => {
+  const box = el.getBoundingClientRect()
+  return { x: box.left + box.width / 2, y: box.top + box.height / 2 }
+}
+
+// Pulls a dragged angle onto the nearest quarter turn when it's close, so a sticker can be put back perfectly straight.
+function snapRotation(degrees: number) {
+  const nearest = Math.round(degrees / 90) * 90
+  const snapped = Math.abs(degrees - nearest) < 4 ? nearest : degrees
+  return ((snapped % 360) + 360) % 360
+}
+
 export const LetterPaper = forwardRef<HTMLDivElement, Props>(function LetterPaper(
   { design, greeting, text, signature, editable, drawing, pen, onText, onItems, onStrokes, textRef },
   ref,
@@ -135,6 +147,7 @@ export const LetterPaper = forwardRef<HTMLDivElement, Props>(function LetterPape
   const [minHeight, setMinHeight] = useState(A4_RATIO)
   const [runsPastPage, setRunsPastPage] = useState(false)
   const [liveStroke, setLiveStroke] = useState<string | null>(null)
+  const rotateDragged = useRef(false)
 
   const theme = allThemes.find((x) => x.id === design.themeId) ?? allThemes[0]
   const font = fonts.find((x) => x.id === design.fontId) ?? fonts[0]
@@ -200,7 +213,8 @@ export const LetterPaper = forwardRef<HTMLDivElement, Props>(function LetterPape
       if (!width) return
       let bottom = A4_RATIO
       overlay.querySelectorAll<HTMLElement>('.paper-item').forEach((el) => {
-        bottom = Math.max(bottom, ((el.offsetTop + el.offsetHeight) / width) * 100 + 2)
+        // Measured on screen, because a rotated sticker can reach lower than its unrotated box.
+        bottom = Math.max(bottom, ((el.getBoundingClientRect().bottom - paper.getBoundingClientRect().top) / width) * 100 + 2)
       })
       setMinHeight(bottom)
     }
@@ -211,7 +225,7 @@ export const LetterPaper = forwardRef<HTMLDivElement, Props>(function LetterPape
     return () => obs.disconnect()
   }, [design.items])
 
-  const moveItem = (id: string, patch: Partial<Pick<LetterItem, 'x' | 'y' | 'w'>>) => {
+  const moveItem = (id: string, patch: Partial<Pick<LetterItem, 'x' | 'y' | 'w'>> & { rotation?: number }) => {
     onItems?.(design.items.map((it) => (it.id === id ? ({ ...it, ...patch } as LetterItem) : it)))
   }
 
@@ -247,9 +261,46 @@ export const LetterPaper = forwardRef<HTMLDivElement, Props>(function LetterPape
     target.setPointerCapture(e.pointerId)
     const width = paper.getBoundingClientRect().width
     const startX = e.clientX
+    const box = target.parentElement!
+    const center = itemCenter(box)
+    const startDist = Math.hypot(e.clientX - center.x, e.clientY - center.y)
+    const heightRatio = box.offsetHeight / box.offsetWidth
+    const rotated = item.type === 'sticker' && Boolean(item.rotation)
     const onMove = (ev: PointerEvent) => {
+      if (rotated) {
+        // The handle can point any way once rotated, so size follows its distance from the sticker's center, which stays put.
+        const w = Math.min(1, Math.max(0.06, (item.w * Math.hypot(ev.clientX - center.x, ev.clientY - center.y)) / startDist))
+        moveItem(item.id, { w, x: item.x + (item.w - w) / 2, y: item.y + ((item.w - w) * heightRatio) / 2 })
+        return
+      }
       const w = Math.min(1 - item.x, Math.max(0.06, item.w + (ev.clientX - startX) / width))
       moveItem(item.id, { w })
+    }
+    const onUp = () => {
+      target.removeEventListener('pointermove', onMove)
+      target.removeEventListener('pointerup', onUp)
+      target.removeEventListener('pointercancel', onUp)
+    }
+    target.addEventListener('pointermove', onMove)
+    target.addEventListener('pointerup', onUp)
+    target.addEventListener('pointercancel', onUp)
+  }
+
+  const startRotate = (e: ReactPointerEvent<HTMLElement>, item: Extract<LetterItem, { type: 'sticker' }>) => {
+    e.stopPropagation()
+    const target = e.currentTarget
+    target.setPointerCapture(e.pointerId)
+    const center = itemCenter(target.parentElement!)
+    const angleAt = (ev: { clientX: number; clientY: number }) => (Math.atan2(ev.clientY - center.y, ev.clientX - center.x) * 180) / Math.PI
+    const startAngle = angleAt(e)
+    const startRotation = item.rotation ?? 0
+    rotateDragged.current = false
+    const onMove = (ev: PointerEvent) => {
+      const delta = angleAt(ev) - startAngle
+      // A tiny slip during a tap shouldn't count as a drag.
+      if (!rotateDragged.current && Math.abs(delta) < 2) return
+      rotateDragged.current = true
+      moveItem(item.id, { rotation: snapRotation(startRotation + delta) })
     }
     const onUp = () => {
       target.removeEventListener('pointermove', onMove)
@@ -336,7 +387,7 @@ export const LetterPaper = forwardRef<HTMLDivElement, Props>(function LetterPape
             <div
               ref={editorRef}
               className={`paper-text ${design.bgId === 'lines' ? 'paper-lined' : ''}`}
-              style={design.bgId === 'lines' ? { ['--line' as string]: `${theme.accent}55` } : undefined}
+              style={{ fontWeight: design.weight, ...(design.bgId === 'lines' && { ['--line' as string]: `${theme.accent}55` }) }}
               dir={lang === 'he' ? 'rtl' : 'ltr'}
               role={editable ? 'textbox' : undefined}
               aria-multiline={editable ? true : undefined}
@@ -376,7 +427,7 @@ export const LetterPaper = forwardRef<HTMLDivElement, Props>(function LetterPape
               <div
                 key={item.id}
                 className={`paper-item ${selected === item.id ? 'is-selected' : ''} ${editable ? 'is-editable' : ''}`}
-                style={{ left: `${item.x * 100}cqw`, top: `${item.y * 100}cqw`, width: `${item.w * 100}cqw` }}
+                style={{ left: `${item.x * 100}cqw`, top: `${item.y * 100}cqw`, width: `${item.w * 100}cqw`, ...(item.type === 'sticker' && item.rotation ? { transform: `rotate(${item.rotation}deg)` } : undefined) }}
                 tabIndex={editable ? 0 : undefined}
                 role={editable ? 'group' : undefined}
                 aria-label={editable ? t('פריט על הדף. גררו להזזה, Delete למחיקה', 'Item on the page. Drag to move, Delete to remove') : undefined}
@@ -390,12 +441,28 @@ export const LetterPaper = forwardRef<HTMLDivElement, Props>(function LetterPape
                     <button
                       className="item-delete no-export no-print"
                       aria-label={t('מחיקת פריט', 'Remove item')}
+                      // Keeps the ✕ reading as an ✕ on a rotated sticker.
+                      style={item.type === 'sticker' && item.rotation ? { transform: `rotate(${-item.rotation}deg)` } : undefined}
                       onPointerDown={(e) => e.stopPropagation()}
                       onClick={() => onItems?.(design.items.filter((x) => x.id !== item.id))}
                     >
                       ✕
                     </button>
                     <span className="item-resize no-export no-print" onPointerDown={(e) => startResize(e, item)} aria-hidden="true" />
+                    {item.type === 'sticker' && (
+                      <button
+                        className="item-rotate no-export no-print"
+                        title={t('גררו לסיבוב, לחיצה מסובבת ב-15 מעלות', 'Drag to rotate, tap to turn 15 degrees')}
+                        aria-label={t('סיבוב הסטיקר', 'Rotate sticker')}
+                        onPointerDown={(e) => startRotate(e, item)}
+                        onClick={() => {
+                          if (!rotateDragged.current) moveItem(item.id, { rotation: snapRotation((item.rotation ?? 0) + 15) })
+                          rotateDragged.current = false
+                        }}
+                      >
+                        ↻
+                      </button>
+                    )}
                   </>
                 )}
               </div>

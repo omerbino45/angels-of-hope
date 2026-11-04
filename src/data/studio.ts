@@ -47,12 +47,41 @@ export const patterns = [
 ]
 
 export const fonts = [
-  { id: 'heebo', he: 'היבו', en: 'Heebo', family: "'Heebo', sans-serif", scale: 1 },
-  { id: 'frank', he: 'פרנק רוהל', en: 'Frank Ruhl', family: "'Frank Ruhl Libre', serif", scale: 1 },
-  { id: 'david', he: 'דוד', en: 'David', family: "'David Libre', serif", scale: 1.05 },
-  { id: 'varela', he: 'וארלה עגול', en: 'Varela Round', family: "'Varela Round', sans-serif", scale: 1 },
-  { id: 'amatic', he: 'כתב יד', en: 'Handwriting', family: "'Amatic SC', cursive", scale: 1.4 },
+  { id: 'heebo', name: 'Heebo', family: "'Heebo', sans-serif", scale: 1, weights: [100, 200, 300, 400, 500, 600, 700, 800, 900] },
+  { id: 'frank', name: 'Frank Ruhl Libre', family: "'Frank Ruhl Libre', serif", scale: 1, weights: [300, 400, 500, 600, 700, 800, 900] },
+  { id: 'david', name: 'David Libre', family: "'David Libre', serif", scale: 1.05, weights: [400, 500, 700] },
+  { id: 'varela', name: 'Varela Round', family: "'Varela Round', sans-serif", scale: 1, weights: [400] },
+  { id: 'amatic', name: 'Amatic SC', family: "'Amatic SC', cursive", scale: 1.4, weights: [400, 700] },
+  { id: 'assistant', name: 'Assistant', family: "'Assistant', sans-serif", scale: 1, weights: [200, 300, 400, 500, 600, 700, 800] },
+  { id: 'rubik', name: 'Rubik', family: "'Rubik', sans-serif", scale: 1, weights: [300, 400, 500, 600, 700, 800, 900] },
+  { id: 'plex', name: 'IBM Plex Sans Hebrew', family: "'IBM Plex Sans Hebrew', sans-serif", scale: 1, weights: [100, 200, 300, 400, 500, 600, 700] },
+  { id: 'alef', name: 'Alef', family: "'Alef', sans-serif", scale: 1, weights: [400, 700] },
+  { id: 'miriam', name: 'Miriam Libre', family: "'Miriam Libre', sans-serif", scale: 1, weights: [400, 500, 600, 700] },
+  { id: 'fredoka', name: 'Fredoka', family: "'Fredoka', sans-serif", scale: 1, weights: [300, 400, 500, 600, 700] },
+  { id: 'secular', name: 'Secular One', family: "'Secular One', sans-serif", scale: 1, weights: [400] },
+  { id: 'noto-serif', name: 'Noto Serif Hebrew', family: "'Noto Serif Hebrew', serif", scale: 1, weights: [100, 200, 300, 400, 500, 600, 700, 800, 900] },
+  { id: 'bellefair', name: 'Bellefair', family: "'Bellefair', serif", scale: 1.05, weights: [400] },
+  { id: 'suez', name: 'Suez One', family: "'Suez One', serif", scale: 1, weights: [400] },
+  { id: 'playpen', name: 'Playpen Sans Hebrew', family: "'Playpen Sans Hebrew', cursive", scale: 1, weights: [100, 200, 300, 400, 500, 600, 700, 800] },
+  { id: 'karantina', name: 'Karantina', family: "'Karantina', cursive", scale: 1.3, weights: [300, 400, 700] },
 ]
+
+export const fontWeights: Record<number, { he: string; en: string }> = {
+  100: { he: 'דק מאוד', en: 'Thin' },
+  200: { he: 'דק', en: 'Extra light' },
+  300: { he: 'קל', en: 'Light' },
+  400: { he: 'רגיל', en: 'Regular' },
+  500: { he: 'בינוני', en: 'Medium' },
+  600: { he: 'חצי בולד', en: 'Semi bold' },
+  700: { he: 'בולד', en: 'Bold' },
+  800: { he: 'כבד', en: 'Extra bold' },
+  900: { he: 'שחור', en: 'Black' },
+}
+
+/** Fonts come in different weights, so a change of font keeps the closest one it has. */
+export function closestWeight(weights: number[], weight: number) {
+  return weights.reduce((best, w) => (Math.abs(w - weight) < Math.abs(best - weight) ? w : best))
+}
 
 export const sizes = [
   { value: 0.85, he: 'קטן', en: 'Small' },

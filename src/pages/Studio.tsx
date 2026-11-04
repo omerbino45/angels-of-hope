@@ -7,7 +7,7 @@ import { Modal } from '../components/Modal'
 import { GENERAL_ID } from '../data/families'
 import { getBackgroundImage } from '../data/backgrounds'
 import { backgroundCategories } from '../data/backgrounds'
-import { patterns, blankTheme, fonts, penColors, penWidths, sizes, stickerCategories, themes, writingPrompts } from '../data/studio'
+import { patterns, blankTheme, closestWeight, fontWeights, fonts, penColors, penWidths, sizes, stickerCategories, themes, writingPrompts } from '../data/studio'
 import { useI18n } from '../i18n'
 import { gregDateStr, hebrewDateStr, parseGregDate } from '../lib/dates'
 import { downloadPng, fetchSpotifyInfo, parseSpotifyUrl, readImage } from '../lib/export'
@@ -132,6 +132,7 @@ export function Studio() {
   const prompts = useMemo(() => writingPrompts(family?.fallen || null), [family])
 
   const currentTheme = [...themes, blankTheme].find((x) => x.id === design.themeId)!
+  const currentFont = fonts.find((f) => f.id === design.fontId) ?? fonts[0]
 
   const dirty = !sent && (text.trim() !== '' || design.items.length > 0 || design.strokes.length > 0)
   const blocker = useBlocker(({ currentLocation, nextLocation }) => dirty && currentLocation.pathname !== nextLocation.pathname)
@@ -379,18 +380,35 @@ export function Studio() {
                 ))}
               </div>
             </div>
-            <div className="toolbar-group">
-              <label className="toolbar-label" htmlFor="font-select">{t('גופן', 'Font')}</label>
-              <select id="font-select" className="toolbar-select" value={design.fontId} onChange={(e) => patch({ fontId: e.target.value })}>
+            <div className="toolbar-group toolbar-field">
+              <label className="toolbar-label-visible" htmlFor="font-select">{t('גופן', 'Font')}</label>
+              <select id="font-select" dir="ltr" className="toolbar-select" value={design.fontId} onChange={(e) => patch({ fontId: e.target.value, weight: closestWeight(fonts.find((f) => f.id === e.target.value)!.weights, design.weight ?? 400) })}>
                 {fonts.map((f) => (
                   <option key={f.id} value={f.id}>
-                    {t(f.he, f.en)}
+                    {f.name}
                   </option>
                 ))}
               </select>
             </div>
-            <div className="toolbar-group">
-              <label className="toolbar-label" htmlFor="size-select">{t('גודל', 'Size')}</label>
+            <div className="toolbar-group toolbar-field">
+              <label className="toolbar-label-visible" htmlFor="weight-select">{t('משקל', 'Weight')}</label>
+              <select
+                id="weight-select"
+                className="toolbar-select"
+                value={design.weight ?? 400}
+                disabled={currentFont.weights.length < 2}
+                title={currentFont.weights.length < 2 ? t('לגופן הזה יש משקל אחד בלבד', 'This font comes in one weight only') : undefined}
+                onChange={(e) => patch({ weight: Number(e.target.value) })}
+              >
+                {currentFont.weights.map((w) => (
+                  <option key={w} value={w}>
+                    {t(fontWeights[w].he, fontWeights[w].en)}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="toolbar-group toolbar-field">
+              <label className="toolbar-label-visible" htmlFor="size-select">{t('גודל', 'Size')}</label>
               <select id="size-select" className="toolbar-select" value={design.size} onChange={(e) => patch({ size: Number(e.target.value) })}>
                 {sizes.map((s) => (
                   <option key={s.value} value={s.value}>
