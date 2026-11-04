@@ -6,7 +6,7 @@ export interface BackgroundImage {
   en: string
   tone: 'light' | 'dark'
   /** Extra space, in percent of the page width, that keeps text clear of the image's main subject. */
-  pad?: { t?: number; r?: number; b?: number; l?: number }
+  pad?: { t?: number; r?: number; b?: number; l?: number; foot?: number }
   src: string
   thumb: string
 }

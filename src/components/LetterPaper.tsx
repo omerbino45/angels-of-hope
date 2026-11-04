@@ -102,8 +102,8 @@ export function PaperBackground({ bgId, accent, flagColor }: { bgId: string; acc
   return null
 }
 
-export function StickerVisual({ sticker }: { sticker: StickerRef }) {
-  return <img className="sticker-img" src={sticker.src} alt={sticker.he} draggable={false} />
+export function StickerVisual({ sticker, small }: { sticker: StickerRef; small?: boolean }) {
+  return <img className="sticker-img" src={small && sticker.thumb ? sticker.thumb : sticker.src} alt={sticker.he} decoding="async" draggable={false} />
 }
 
 function ItemContent({ item }: { item: LetterItem }) {
@@ -143,6 +143,8 @@ export const LetterPaper = forwardRef<HTMLDivElement, Props>(function LetterPape
   const themeIsDark = theme.ink.startsWith('#f')
   const ink = design.ink ?? autoInk(design.bgId, theme.ink)
   const accent = bgImage ? (onDarkPaper ? '#e6c86e' : themeIsDark ? '#2563a8' : theme.accent) : theme.accent
+  // A frame's lines run where the sign-off normally sits, so it moves into the clear space beside them.
+  const footPosition = bgImage?.pad?.foot !== undefined ? { bottom: `${bgImage.pad.foot}cqw` } : design.bgId === 'frame' ? { bottom: '4.2cqw' } : undefined
   const fontRatio = design.baseRatio * design.size * font.scale
 
   useEffect(() => {
@@ -355,7 +357,9 @@ export const LetterPaper = forwardRef<HTMLDivElement, Props>(function LetterPape
               {editable ? null : text}
             </div>
             {signature && <p className="paper-sign">{signature}</p>}
-            <p className="paper-foot" style={{ color: accent }}>מלאכים של תקווה</p>
+            <p className={`paper-foot ${bgImage && bgImage.pad?.foot === undefined ? `paper-foot-on-${bgImage.tone}` : ''}`} style={{ color: accent, ...footPosition }}>
+              <span>מלאכים של תקווה</span>
+            </p>
           </div>
 
           <svg className="stroke-layer" viewBox="0 0 1000 6000" aria-hidden="true">

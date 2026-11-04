@@ -11,6 +11,8 @@ export interface Family {
 
 export interface StickerRef {
   src: string
+  /** A small copy for the gallery, so switching categories stays fast. */
+  thumb?: string
   he: string
   en: string
   flag?: boolean
