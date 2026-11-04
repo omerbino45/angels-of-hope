@@ -596,7 +596,7 @@ export function Studio() {
           <div className="prompts desktop-only">
             <h3 className="prompts-title">{t('לא יודעים איך להתחיל?', 'Not sure how to start?')}</h3>
             <p className="prompts-tip">
-              {t('אין צורך במילים גדולות. כמה שורות כנות ואישיות מספיקות כדי שהמשפחה תרגיש שזוכרים.', 'No need for big words. A few honest, personal lines are enough for a family to feel remembered.')}
+              {t('אין צורך במילים גדולות. כמה שורות כנות ואישיות מספיקות כדי שהמשפחה תרגיש שיש מי שזוכר.', 'No need for big words. A few honest, personal lines are enough for a family to feel that someone remembers.')}
             </p>
             {promptList}
           </div>
