@@ -91,9 +91,76 @@ Unit insignia may also be subject to IDF rules on their use, separately from the
 | [סמל גדוד נחשון 90.svg](https://commons.wikimedia.org/wiki/File:%D7%A1%D7%9E%D7%9C_%D7%92%D7%93%D7%95%D7%93_%D7%A0%D7%97%D7%A9%D7%95%D7%9F_90.svg) | CC BY-SA 4.0 | Drordroriy |
 | [סמל כוחות האש - חיל התותחנים.svg](https://commons.wikimedia.org/wiki/File:%D7%A1%D7%9E%D7%9C_%D7%9B%D7%95%D7%97%D7%95%D7%AA_%D7%94%D7%90%D7%A9_-_%D7%97%D7%99%D7%9C_%D7%94%D7%AA%D7%95%D7%AA%D7%97%D7%A0%D7%99%D7%9D.svg) | CC BY-SA 3.0 | IDF Spokesperson's Unit |
 
+## Stickers
+
+The files were changed: resized, background removed and a white outline added.
+
+| File | License | Source |
+| --- | --- | --- |
+| [Red heart png sticker, Valentine's](https://www.rawpixel.com/image/6479692/png-frame-sticker) | CC0 | rawpixel |
+| [Red heart png sticker, Valentine's](https://www.rawpixel.com/image/6431027/png-frame-sticker) | CC0 | rawpixel |
+| [Red diamond png heart sticker](https://www.rawpixel.com/image/6479650/png-frame-sticker) | CC0 | rawpixel |
+| [Red diamond png heart sticker](https://www.rawpixel.com/image/6429928/png-frame-sticker) | CC0 | rawpixel |
+| [3D Double Heart PNG Image.png](https://commons.wikimedia.org/wiki/File:3D_Double_Heart_PNG_Image.png) | CC BY-SA 4.0 | Pngfolio |
+| [Pink heart png sticker, Valentine's](https://www.rawpixel.com/image/6704319/png-sticker-heart) | CC0 | rawpixel |
+| [Heart png sticker, transparent background](https://www.rawpixel.com/image/9190270/png-white-background-heart) | CC0 | rawpixel |
+| [Sparkling heart](https://github.com/microsoft/fluentui-emoji) | MIT | Microsoft Fluent Emoji |
+| [Heart hands](https://github.com/microsoft/fluentui-emoji) | MIT | Microsoft Fluent Emoji |
+| [Red rose png sticker, valentine's](https://www.rawpixel.com/image/6430258/png-flower-sticker) | CC0 | rawpixel |
+| [Garden rose png sticker vintage](https://www.rawpixel.com/image/6272240/png-flowers-sticker) | CC0 | rawpixel |
+| [Red rose png sticker illustration](https://www.rawpixel.com/image/7576711/png-rose-flower) | CC0 | rawpixel |
+| [Cabbage rose png sticker illustration](https://www.rawpixel.com/image/6713467/png-flower-sticker) | CC0 | rawpixel |
+| [Colorful roses png sticker, botanical](https://www.rawpixel.com/image/6448973/png-flower-sticker) | CC0 | rawpixel |
+| [Love letter png sticker, transparent](https://www.rawpixel.com/image/6328834/png-sticker-heart) | CC0 | rawpixel |
+| [Love letter png sticker, transparent](https://www.rawpixel.com/image/7371682/png-sticker-heart-public-domain) | CC0 | rawpixel |
+| [Heart seal png stamp sticker](https://www.rawpixel.com/image/6430486/png-sticker-public-domain) | CC0 | rawpixel |
+| [Israel Flag - iconic waving.svg](https://commons.wikimedia.org/wiki/File:Israel_Flag_-_iconic_waving.svg) | CC BY-SA 4.0 | SpinnerLaserzthe2nd |
+| [Israel flag heart.svg](https://commons.wikimedia.org/wiki/File:Israel_flag_heart.svg) | CC0 | Sangjinhwa |
+| [Gold Star of David.png](https://commons.wikimedia.org/wiki/File:Gold_Star_of_David.png) | CC BY-SA 4.0 | RachelMcDowell20 |
+| [Star David png sticker, transparent](https://www.rawpixel.com/image/7284271/png-sticker-public-domain) | CC0 | rawpixel |
+| [Menora](https://commons.wikimedia.org/w/index.php?curid=1120218) | CC BY-SA 2.5 | Marcin n® ☼ |
+| [Temple menorah png sticker, transparent](https://www.rawpixel.com/image/7284228/png-sticker-golden) | CC0 | rawpixel |
+| [The Western Wall in Jerusalem](https://commons.wikimedia.org/w/index.php?curid=63689969) | CC BY-SA 3.0 | Daniel Majewski |
+| [Peace dove png sticker, transparent](https://www.rawpixel.com/image/8917862/png-people-cartoon) | CC0 | rawpixel |
+| [Flying dove png sticker, transparent](https://www.rawpixel.com/image/7371723/png-sticker-public-domain-bird) | CC0 | rawpixel |
+| [Olive branch png sticker, transparent](https://www.rawpixel.com/image/6330557/png-sticker-leaf) | CC0 | rawpixel |
+| [Green olive png sticker, transparent](https://www.rawpixel.com/image/9190273/png-plant-people) | CC0 | rawpixel |
+| [Olive oil bottle png sticker](https://www.rawpixel.com/image/6330026/png-sticker-leaf) | CC0 | rawpixel |
+| [Pomegranate fruit png sticker, vintage](https://www.rawpixel.com/image/6756337/png-sticker-tree) | CC0 | rawpixel |
+| [Yellow ribbon 2.svg](https://commons.wikimedia.org/wiki/File:Yellow_ribbon_2.svg) | CC BY-SA 4.0 | Rferranp |
+| [Shiva candle.png](https://commons.wikimedia.org/wiki/File:Shiva_candle.png) | CC BY-SA 4.0 | Breawycker |
+| [Lit candle png sticker illustration](https://www.rawpixel.com/image/7568179/png-sticker-public-domain) | CC0 | rawpixel |
+| [Melting candle png sticker, transparent](https://www.rawpixel.com/image/6763043/png-sticker-light) | CC0 | rawpixel |
+| [Red poppy png flower sticker](https://www.rawpixel.com/image/6494310/png-flower-sticker) | CC0 | rawpixel |
+| [Red poppy png flower sticker](https://www.rawpixel.com/image/6439842/png-plant-flower) | CC0 | rawpixel |
+| [Red poppy png flower sticker](https://www.rawpixel.com/image/6494140/png-flower-sticker) | CC0 | rawpixel |
+| [Red poppy png sticker, flower](https://www.rawpixel.com/image/6430481/png-flower-sticker) | CC0 | rawpixel |
+| [Sunflower png sticker, vintage botanical](https://www.rawpixel.com/image/6494315/png-flower-sticker) | CC0 | rawpixel |
+| [White water lilies png sticker](https://www.rawpixel.com/image/6334637/png-background-plant-flowers) | CC0 | rawpixel |
+| [Monarch Butterfly.svg](https://commons.wikimedia.org/wiki/File:Monarch_Butterfly.svg) | CC BY-SA 3.0 | Bugboy52.40 |
+| [3D rainbow png sticker, weather](https://www.rawpixel.com/image/6286803/png-cloud-public-domain) | CC0 | rawpixel |
+| [PNG Rainbow sky and flowers](https://www.rawpixel.com/image/11728416/png-cloud-flower) | CC0 | rawpixel |
+| [Pink angel wings png sticker](https://www.rawpixel.com/image/6338404/png-sticker-public-domain) | CC0 | rawpixel |
+| [3D dove](https://github.com/microsoft/fluentui-emoji) | MIT | Microsoft Fluent Emoji |
+| [Hug](https://github.com/microsoft/fluentui-emoji) | MIT | Microsoft Fluent Emoji |
+| [Happy family png sticker, transparent](https://www.rawpixel.com/image/6728869/png-sticker-watercolor) | CC0 | rawpixel |
+| [Little friends hugging png illustration](https://www.rawpixel.com/image/10094242/png-white-background-cartoon) | CC0 | rawpixel |
+| [Cute family png sticker, cartoon](https://www.rawpixel.com/image/6535649/png-sticker-public-domain) | CC0 | rawpixel |
+| [Cute family png sticker, cartoon](https://www.rawpixel.com/image/6535343/png-christmas-sticker) | CC0 | rawpixel |
+| [Story time png sticker, transparent](https://www.rawpixel.com/image/10094151/png-cartoon-illustrations) | CC0 | rawpixel |
+| [Family circle png sticker, transparent](https://www.rawpixel.com/image/6772483/png-sticker-public-domain) | CC0 | rawpixel |
+| [Family eating png sticker, transparent](https://www.rawpixel.com/image/6772848/png-sticker-public-domain) | CC0 | rawpixel |
+| [Old couple png sticker, transparent](https://www.rawpixel.com/image/9069702/png-cartoon-illustrations) | CC0 | rawpixel |
+| [Colorful people png holding hands](https://www.rawpixel.com/image/6557086/png-sticker-public-domain) | CC0 | rawpixel |
+| [Handshake](https://github.com/microsoft/fluentui-emoji) | MIT | Microsoft Fluent Emoji |
+| [Prayer hands](https://github.com/microsoft/fluentui-emoji) | MIT | Microsoft Fluent Emoji |
+| [Open hands](https://github.com/microsoft/fluentui-emoji) | MIT | Microsoft Fluent Emoji |
+| [Offered hands](https://github.com/microsoft/fluentui-emoji) | MIT | Microsoft Fluent Emoji |
+| [Site icons](https://phosphoricons.com) | MIT | Phosphor Icons |
+
 ## Letter backgrounds
 
-Backgrounds whose file name starts with `ph-` are CC0 photos found through [Openverse](https://openverse.org). The rest were generated for this project with code. A soft overlay was added to each photo so writing stays readable.
+Backgrounds whose file name starts with `ph-` are CC0 photos found through [Openverse](https://openverse.org). The rest were generated for this project with code. Photos were edited to make room for text, including a soft overlay so writing stays readable.
 
 | File | License | Source |
 | --- | --- | --- |
@@ -134,6 +201,13 @@ Backgrounds whose file name starts with `ph-` are CC0 photos found through [Open
 | ph-177 | CC0 | [rawpixel](https://www.rawpixel.com/image/6169157/photo-image-background-wallpaper-paper) |
 | ph-226 | CC0 | [rawpixel](https://www.rawpixel.com/image/18959282/tree-neuenahr-july-17-1886-carl-theodor-reiffenstein) |
 
-## Sticker icons
 
-Icons in `src/assets/stickers/icons` are built from [Phosphor Icons](https://phosphoricons.com) (MIT license), recolored with a white sticker outline. The candle and the Israeli flag sticker were drawn for this project.
+## Fonts
+
+| Font | License | Source |
+| --- | --- | --- |
+| Heebo | OFL | [Google Fonts](https://fonts.google.com/specimen/Heebo) |
+| Frank Ruhl Libre | OFL | [Google Fonts](https://fonts.google.com/specimen/Frank+Ruhl+Libre) |
+| David Libre | OFL | [Google Fonts](https://fonts.google.com/specimen/David+Libre) |
+| Varela Round | OFL | [Google Fonts](https://fonts.google.com/specimen/Varela+Round) |
+| Amatic SC | OFL | [Google Fonts](https://fonts.google.com/specimen/Amatic+SC) |

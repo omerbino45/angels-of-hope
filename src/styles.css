@@ -124,6 +124,17 @@ footer strong{color:rgba(255,255,255,0.9);}
 .footer-admin{margin-top:8px;}
 .footer-admin a{color:rgba(255,255,255,0.55);font-size:12px;text-decoration:none;display:inline-block;padding:12px 18px;}
 .footer-admin a:hover{color:#fff;}
+.credits-group{margin-top:44px;}
+.credits-heading{font-size:22px;font-weight:700;color:var(--navy);margin-bottom:8px;}
+.credits-note{font-size:14px;line-height:1.7;color:var(--text-mid);margin-bottom:14px;max-width:680px;}
+.credits-table-wrap{background:var(--white);border:1px solid rgba(37,99,168,0.14);border-radius:12px;overflow:hidden;}
+.credits-table{width:100%;border-collapse:collapse;font-size:13px;line-height:1.55;table-layout:fixed;}
+.credits-table th{text-align:start;font-weight:500;color:var(--text-mid);padding:10px 14px;border-bottom:1px solid rgba(37,99,168,0.14);}
+.credits-table td{padding:9px 14px;border-bottom:1px solid rgba(37,99,168,0.08);vertical-align:top;color:var(--text-dark);overflow-wrap:anywhere;}
+.credits-table tr:last-child td{border-bottom:none;}
+.credits-table th:nth-child(2),.credits-license{width:120px;}
+.credits-license{white-space:nowrap;}
+.credits-table a{color:var(--blue);}
 
 /* Forms */
 .form-group{margin-bottom:18px;}
@@ -238,6 +249,11 @@ footer strong{color:rgba(255,255,255,0.9);}
 .paper-foot{position:absolute;bottom:2.4cqw;left:0;right:0;font-size:max(9px,1.5cqw);text-align:center;opacity:.75;font-family:'Heebo',sans-serif;}
 .bg-layer{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
 .bg-tile-repeat{background-size:15cqw 15cqw;background-repeat:repeat;}
+.on-photo-dark{text-shadow:0 0 .3em rgba(8,14,30,.8);}
+.on-photo-light{text-shadow:0 0 .3em rgba(255,252,246,.9);}
+.runs-past-page .paper-text{margin-inline:-1em;padding-inline:1em;border-radius:1cqw;text-shadow:none;}
+.runs-past-page.on-photo-light .paper-text{background:rgba(255,252,246,.86);}
+.runs-past-page.on-photo-dark .paper-text{background:rgba(8,14,30,.74);}
 .bg-photo{background-size:100cqw auto;background-repeat:repeat-y;background-position:top center;}
 .bg-frame{position:absolute;inset:2.5cqw;border:.5cqw double;border-radius:1cqw;}
 .bg-wave{position:absolute;}
@@ -268,6 +284,8 @@ footer strong{color:rgba(255,255,255,0.9);}
 
 /* Dock */
 .dock{position:sticky;bottom:10px;z-index:20;background:var(--white);border:1px solid rgba(37,99,168,0.14);border-radius:14px;box-shadow:0 -4px 24px rgba(15,45,94,0.12);}
+/* Netlify's badge is fixed to the bottom corner on free plans. Keep the dock clear of it for as long as it is on. */
+body:has(#nl-badge-frame) .dock{bottom:72px;}
 .dock-panel{padding:14px;border-bottom:1px solid rgba(37,99,168,0.12);max-height:min(44vh,360px);overflow-y:auto;}
 .dock-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;padding:8px 10px;}
 .dock-tabs{display:flex;gap:4px;flex-wrap:wrap;}
@@ -390,6 +408,10 @@ footer strong{color:rgba(255,255,255,0.9);}
   .toolbar-group{flex:1 1 0;min-width:0;}
   .toolbar-group:first-child{flex:1 1 100%;}
   .toolbar-group-ink{flex:0 0 auto;}
+  .credits-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);}
+  .credits-table,.credits-table tbody,.credits-table tr,.credits-table td{display:block;width:auto;}
+  .credits-table tr{padding:10px 14px;border-bottom:1px solid rgba(37,99,168,0.08);}
+  .credits-table td{padding:1px 0;border:none;}
   .ink-button{min-height:40px;}
   .ink-text{flex:1;font-size:16px;}
   .ink-field:has(.ink-text){flex:1 1 100%;}

@@ -35,6 +35,7 @@ export function Layout() {
         <p className="footer-copy">© 2025 מלאכים של תקווה</p>
         <p className="footer-admin">
           <Link to="/admin">{t('ניהול', 'Admin')}</Link>
+          <Link to="/credits">{t('קרדיטים', 'Credits')}</Link>
         </p>
       </footer>
       <ScrollRestoration />

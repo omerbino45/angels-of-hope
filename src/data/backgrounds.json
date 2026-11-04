@@ -121,25 +121,37 @@
     "id": "ph-9",
     "he": "פנסים בגינה",
     "en": "Lanterns in a garden",
-    "tone": "dark"
+    "tone": "dark",
+    "pad": {
+     "b": 66
+    }
    },
    {
     "id": "ph-10",
     "he": "נר דק",
     "en": "Slim candle",
-    "tone": "dark"
+    "tone": "dark",
+    "pad": {
+     "b": 64
+    }
    },
    {
     "id": "ph-12",
     "he": "נר בכוס זכוכית",
     "en": "Candle in glass",
-    "tone": "dark"
+    "tone": "dark",
+    "pad": {
+     "b": 66
+    }
    },
    {
     "id": "ph-14",
     "he": "להבה בחושך",
     "en": "Flame in the dark",
-    "tone": "dark"
+    "tone": "dark",
+    "pad": {
+     "b": 66
+    }
    },
    {
     "id": "ph-15",
@@ -157,43 +169,65 @@
     "id": "ph-19",
     "he": "נרות אדומים",
     "en": "Red candles",
-    "tone": "dark"
+    "tone": "dark",
+    "pad": {
+     "b": 69
+    }
    },
    {
     "id": "ph-20",
     "he": "נרות לבנים",
     "en": "White candles",
-    "tone": "dark"
+    "tone": "dark",
+    "pad": {
+     "b": 66,
+     "l": 24
+    }
    },
    {
     "id": "ph-21",
     "he": "נר אדום",
     "en": "Red candle",
-    "tone": "dark"
+    "tone": "dark",
+    "pad": {
+     "b": 66
+    }
    },
    {
     "id": "ph-22",
     "he": "נרות חמים",
     "en": "Warm candles",
-    "tone": "dark"
+    "tone": "dark",
+    "pad": {
+     "b": 66
+    }
    },
    {
     "id": "ph-29",
     "he": "פנסים בלילה",
     "en": "Lanterns at night",
-    "tone": "dark"
+    "tone": "dark",
+    "pad": {
+     "b": 58
+    }
    },
    {
     "id": "ph-33",
     "he": "להבה עדינה",
     "en": "Gentle flame",
-    "tone": "dark"
+    "tone": "dark",
+    "pad": {
+     "b": 64
+    }
    },
    {
     "id": "ph-35",
     "he": "נר עמוד",
     "en": "Pillar candle",
-    "tone": "dark"
+    "tone": "dark",
+    "pad": {
+     "b": 66
+    }
    }
   ]
  },
@@ -206,49 +240,97 @@
     "id": "card-gold",
     "he": "פרחים על קלף זהב",
     "en": "Flowers on gold parchment",
-    "tone": "light"
+    "tone": "light",
+    "pad": {
+     "t": 36,
+     "r": 14,
+     "l": 14,
+     "b": 36
+    }
    },
    {
     "id": "card-blue",
     "he": "פרחים כחולים",
     "en": "Blue flowers",
-    "tone": "light"
+    "tone": "light",
+    "pad": {
+     "t": 36,
+     "r": 14,
+     "l": 14,
+     "b": 36
+    }
    },
    {
     "id": "card-rose",
     "he": "פרחים ורודים",
     "en": "Pink flowers",
-    "tone": "light"
+    "tone": "light",
+    "pad": {
+     "t": 36,
+     "r": 14,
+     "l": 14,
+     "b": 36
+    }
    },
    {
     "id": "card-lav",
     "he": "פרחי לבנדר",
     "en": "Lavender flowers",
-    "tone": "light"
+    "tone": "light",
+    "pad": {
+     "t": 36,
+     "r": 14,
+     "l": 14,
+     "b": 36
+    }
    },
    {
     "id": "card-sage",
     "he": "פרחים ירוקים",
     "en": "Sage flowers",
-    "tone": "light"
+    "tone": "light",
+    "pad": {
+     "t": 36,
+     "r": 14,
+     "l": 14,
+     "b": 36
+    }
    },
    {
     "id": "card-coral",
     "he": "פרחים כתומים",
     "en": "Coral flowers",
-    "tone": "light"
+    "tone": "light",
+    "pad": {
+     "t": 36,
+     "r": 14,
+     "l": 14,
+     "b": 36
+    }
    },
    {
     "id": "card-ivory",
     "he": "פרחים על שנהב",
     "en": "Flowers on ivory",
-    "tone": "light"
+    "tone": "light",
+    "pad": {
+     "t": 36,
+     "r": 14,
+     "l": 14,
+     "b": 36
+    }
    },
    {
     "id": "card-azure",
     "he": "פרחי תכלת על קלף",
     "en": "Azure flowers on parchment",
-    "tone": "light"
+    "tone": "light",
+    "pad": {
+     "t": 36,
+     "r": 14,
+     "l": 14,
+     "b": 36
+    }
    }
   ]
  },
@@ -261,49 +343,97 @@
     "id": "wc-hope",
     "he": "צבעי מים: תקווה",
     "en": "Watercolor: hope",
-    "tone": "light"
+    "tone": "light",
+    "pad": {
+     "t": 30,
+     "r": 16,
+     "l": 16,
+     "b": 34
+    }
    },
    {
     "id": "wc-sunset",
     "he": "צבעי מים: שקיעה",
     "en": "Watercolor: sunset",
-    "tone": "light"
+    "tone": "light",
+    "pad": {
+     "t": 30,
+     "r": 26,
+     "l": 14,
+     "b": 34
+    }
    },
    {
     "id": "wc-blush",
     "he": "צבעי מים: ורוד",
     "en": "Watercolor: blush",
-    "tone": "light"
+    "tone": "light",
+    "pad": {
+     "t": 30,
+     "r": 16,
+     "l": 16,
+     "b": 34
+    }
    },
    {
     "id": "wc-lav",
     "he": "צבעי מים: סגול",
     "en": "Watercolor: lavender",
-    "tone": "light"
+    "tone": "light",
+    "pad": {
+     "t": 30,
+     "r": 16,
+     "l": 16,
+     "b": 34
+    }
    },
    {
     "id": "wc-sage",
     "he": "צבעי מים: ירוק",
     "en": "Watercolor: sage",
-    "tone": "light"
+    "tone": "light",
+    "pad": {
+     "t": 30,
+     "r": 16,
+     "l": 16,
+     "b": 34
+    }
    },
    {
     "id": "wc-sea",
     "he": "צבעי מים: ים",
     "en": "Watercolor: sea",
-    "tone": "light"
+    "tone": "light",
+    "pad": {
+     "t": 32,
+     "r": 20,
+     "l": 22,
+     "b": 40
+    }
    },
    {
     "id": "wc-gold",
     "he": "צבעי מים: זהב",
     "en": "Watercolor: gold",
-    "tone": "light"
+    "tone": "light",
+    "pad": {
+     "t": 30,
+     "r": 16,
+     "l": 16,
+     "b": 34
+    }
    },
    {
     "id": "wc-top",
     "he": "צבעי מים: שמיים",
     "en": "Watercolor: sky",
-    "tone": "light"
+    "tone": "light",
+    "pad": {
+     "t": 50,
+     "r": 8,
+     "l": 8,
+     "b": 8
+    }
    }
   ]
  },
@@ -316,37 +446,73 @@
     "id": "frame-cream",
     "he": "מסגרת זהב על שמנת",
     "en": "Gold frame on cream",
-    "tone": "light"
+    "tone": "light",
+    "pad": {
+     "t": 24,
+     "r": 14,
+     "l": 14,
+     "b": 22
+    }
    },
    {
     "id": "frame-white",
     "he": "מסגרת זהב על לבן",
     "en": "Gold frame on white",
-    "tone": "light"
+    "tone": "light",
+    "pad": {
+     "t": 24,
+     "r": 14,
+     "l": 14,
+     "b": 22
+    }
    },
    {
     "id": "frame-sky",
     "he": "מסגרת זהב על תכלת",
     "en": "Gold frame on pale blue",
-    "tone": "light"
+    "tone": "light",
+    "pad": {
+     "t": 24,
+     "r": 14,
+     "l": 14,
+     "b": 22
+    }
    },
    {
     "id": "frame-navy",
     "he": "מסגרת זהב על כחול",
     "en": "Gold frame on navy",
-    "tone": "dark"
+    "tone": "dark",
+    "pad": {
+     "t": 24,
+     "r": 14,
+     "l": 14,
+     "b": 22
+    }
    },
    {
     "id": "frame-wine",
     "he": "מסגרת זהב על בורדו",
     "en": "Gold frame on wine",
-    "tone": "dark"
+    "tone": "dark",
+    "pad": {
+     "t": 24,
+     "r": 14,
+     "l": 14,
+     "b": 22
+    }
    },
    {
     "id": "frame-green",
     "he": "מסגרת זהב על ירוק",
     "en": "Gold frame on green",
-    "tone": "dark"
+    "tone": "dark",
+    "pad": {
+     "t": 24,
+     "r": 14,
+     "l": 14,
+     "b": 22
+    }
    }
   ]
  },
@@ -365,7 +531,11 @@
     "id": "ph-64",
     "he": "צבעונים בחלון",
     "en": "Tulips by a window",
-    "tone": "light"
+    "tone": "light",
+    "pad": {
+     "r": 11,
+     "l": 11
+    }
    },
    {
     "id": "ph-154",
@@ -377,13 +547,21 @@
     "id": "ph-157",
     "he": "פעמוני שלג",
     "en": "Lily of the valley",
-    "tone": "light"
+    "tone": "light",
+    "pad": {
+     "r": 11,
+     "l": 11
+    }
    },
    {
     "id": "ph-153",
     "he": "פעמונים ירוקים",
     "en": "Green bells",
-    "tone": "light"
+    "tone": "light",
+    "pad": {
+     "r": 11,
+     "l": 11
+    }
    },
    {
     "id": "ph-287",
@@ -493,7 +671,11 @@
     "id": "ph-321",
     "he": "שיבולת קרובה",
     "en": "Wheat close up",
-    "tone": "light"
+    "tone": "light",
+    "pad": {
+     "r": 11,
+     "l": 11
+    }
    },
    {
     "id": "ph-326",

@@ -16,6 +16,7 @@ import { StoreProvider } from './store'
 import { Layout } from './components/Layout'
 import { Home } from './pages/Home'
 import { Chooser } from './pages/Chooser'
+import { Credits } from './pages/Credits'
 import { Studio } from './pages/Studio'
 import { Admin } from './pages/Admin'
 
@@ -27,6 +28,7 @@ const router = createBrowserRouter([
       { path: '/write', element: <Chooser /> },
       { path: '/write/:familyId', element: <Studio /> },
       { path: '/admin', element: <Admin /> },
+      { path: '/credits', element: <Credits /> },
       { path: '*', element: <Home /> },
     ],
   },

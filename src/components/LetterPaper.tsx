@@ -133,6 +133,7 @@ export const LetterPaper = forwardRef<HTMLDivElement, Props>(function LetterPape
   const editorRef = textRef ?? localTextRef
   const [selected, setSelected] = useState<string | null>(null)
   const [minHeight, setMinHeight] = useState(A4_RATIO)
+  const [runsPastPage, setRunsPastPage] = useState(false)
   const [liveStroke, setLiveStroke] = useState<string | null>(null)
 
   const theme = allThemes.find((x) => x.id === design.themeId) ?? allThemes[0]
@@ -169,6 +170,23 @@ export const LetterPaper = forwardRef<HTMLDivElement, Props>(function LetterPape
     window.addEventListener('pointerdown', onDown)
     return () => window.removeEventListener('pointerdown', onDown)
   }, [selected])
+
+  // An image background repeats past the first page, so a longer letter gets a panel to stay readable over it.
+  useLayoutEffect(() => {
+    const paper = paperRef.current
+    const editor = editorRef.current
+    if (!paper || !editor) return
+    const update = () => {
+      const box = paper.getBoundingClientRect()
+      if (!box.width) return
+      setRunsPastPage(((editor.getBoundingClientRect().bottom - box.top) / box.width) * 100 > A4_RATIO)
+    }
+    update()
+    const obs = new ResizeObserver(update)
+    obs.observe(editor)
+    obs.observe(paper)
+    return () => obs.disconnect()
+  }, [])
 
   // A sticker placed low on the page, or a tall photo, extends the sheet instead of being clipped.
   useLayoutEffect(() => {
@@ -303,7 +321,7 @@ export const LetterPaper = forwardRef<HTMLDivElement, Props>(function LetterPape
             <PaperBackground bgId={design.bgId} accent={theme.accent} flagColor={themeIsDark ? '#4a89c8' : '#1f4fa8'} />
           )}
           <div
-            className="paper-content"
+            className={`paper-content ${bgImage ? `on-photo-${bgImage.tone}` : ''} ${bgImage && runsPastPage ? 'runs-past-page' : ''}`}
             style={{
               fontSize: `${fontRatio * 100}cqw`,
               ...(bgImage?.pad?.t !== undefined && { paddingTop: `${bgImage.pad.t}cqw` }),
