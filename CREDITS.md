@@ -135,12 +135,6 @@ The files were changed: resized, background removed and a white outline added.
 | [Red poppy png flower sticker](https://www.rawpixel.com/image/6439842/png-plant-flower) | CC0 | rawpixel |
 | [Red poppy png flower sticker](https://www.rawpixel.com/image/6494140/png-flower-sticker) | CC0 | rawpixel |
 | [Red poppy png sticker, flower](https://www.rawpixel.com/image/6430481/png-flower-sticker) | CC0 | rawpixel |
-| [Sunflower png sticker, vintage botanical](https://www.rawpixel.com/image/6494315/png-flower-sticker) | CC0 | rawpixel |
-| [White water lilies png sticker](https://www.rawpixel.com/image/6334637/png-background-plant-flowers) | CC0 | rawpixel |
-| [Monarch Butterfly.svg](https://commons.wikimedia.org/wiki/File:Monarch_Butterfly.svg) | CC BY-SA 3.0 | Bugboy52.40 |
-| [3D rainbow png sticker, weather](https://www.rawpixel.com/image/6286803/png-cloud-public-domain) | CC0 | rawpixel |
-| [PNG Rainbow sky and flowers](https://www.rawpixel.com/image/11728416/png-cloud-flower) | CC0 | rawpixel |
-| [Pink angel wings png sticker](https://www.rawpixel.com/image/6338404/png-sticker-public-domain) | CC0 | rawpixel |
 | [3D dove](https://github.com/microsoft/fluentui-emoji) | MIT | Microsoft Fluent Emoji |
 | [Hug](https://github.com/microsoft/fluentui-emoji) | MIT | Microsoft Fluent Emoji |
 | [Happy family png sticker, transparent](https://www.rawpixel.com/image/6728869/png-sticker-watercolor) | CC0 | rawpixel |

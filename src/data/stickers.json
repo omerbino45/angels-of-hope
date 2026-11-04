@@ -142,6 +142,11 @@
     "en": "White dove"
    },
    {
+    "file": "art/dove-3d.webp",
+    "he": "יונה תלת־ממד",
+    "en": "3D dove"
+   },
+   {
     "file": "art/olive-branch.webp",
     "he": "ענף זית",
     "en": "Olive branch"
@@ -207,41 +212,6 @@
     "file": "art/poppy-orange.webp",
     "he": "פרג כתום",
     "en": "Orange poppy"
-   },
-   {
-    "file": "art/sunflower.webp",
-    "he": "חמנייה",
-    "en": "Sunflower"
-   },
-   {
-    "file": "art/water-lily.webp",
-    "he": "שושן מים",
-    "en": "Water lily"
-   },
-   {
-    "file": "art/butterfly.webp",
-    "he": "פרפר",
-    "en": "Monarch butterfly"
-   },
-   {
-    "file": "art/rainbow-clouds.webp",
-    "he": "קשת בעננים",
-    "en": "Rainbow in clouds"
-   },
-   {
-    "file": "art/rainbow-flowers.webp",
-    "he": "קשת ופרחים",
-    "en": "Rainbow and flowers"
-   },
-   {
-    "file": "art/wings-rose.webp",
-    "he": "כנפיים ורודות",
-    "en": "Rose wings"
-   },
-   {
-    "file": "art/dove-3d.webp",
-    "he": "יונה תלת־ממד",
-    "en": "3D dove"
    }
   ]
  },
