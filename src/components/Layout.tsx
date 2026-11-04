@@ -1,4 +1,5 @@
 import { Link, NavLink, Outlet, ScrollRestoration } from 'react-router-dom'
+import { CONTACT_EMAIL } from '../data/contact'
 import { useI18n } from '../i18n'
 import logo from '../assets/logo.jpeg'
 
@@ -32,6 +33,9 @@ export function Layout() {
           <strong>מלאכים של תקווה | Angels of Hope</strong>
         </p>
         <p>{t('נותנים יותר ממתנה, נותנים חיבוק של קהילה', "Giving more than a gift, giving a community's embrace")}</p>
+        <p className="footer-contact">
+          {t('צרו איתנו קשר:', 'Get in touch:')} <a href={`mailto:${CONTACT_EMAIL}`} dir="ltr">{CONTACT_EMAIL}</a>
+        </p>
         <p className="footer-copy">© 2025 מלאכים של תקווה</p>
         <p className="footer-admin">
           <Link to="/admin">{t('ניהול', 'Admin')}</Link>

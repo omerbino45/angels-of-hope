@@ -307,7 +307,71 @@ function FamiliesTab() {
   )
 }
 
+// A placeholder gate until there is a server: these values ship in the page's code, so it does not protect real data.
+const ADMIN_USER = 'admin'
+const ADMIN_PASSWORD = 'admin'
+const SESSION_KEY = 'aoh-admin'
+
+function readSession() {
+  try {
+    return sessionStorage.getItem(SESSION_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
+function writeSession(signedIn: boolean) {
+  try {
+    if (signedIn) sessionStorage.setItem(SESSION_KEY, '1')
+    else sessionStorage.removeItem(SESSION_KEY)
+  } catch {
+    // Without storage the sign-in simply lasts until the page reloads.
+  }
+}
+
+function AdminLogin({ onSignIn }: { onSignIn: () => void }) {
+  const { t } = useI18n()
+  const [user, setUser] = useState('')
+  const [password, setPassword] = useState('')
+  const [failed, setFailed] = useState(false)
+
+  return (
+    <section className="admin-login">
+      <form
+        className="admin-login-card"
+        onSubmit={(e) => {
+          e.preventDefault()
+          if (user.trim() === ADMIN_USER && password === ADMIN_PASSWORD) onSignIn()
+          else setFailed(true)
+        }}
+      >
+        <h1 className="admin-login-title">{t('כניסה לניהול', 'Admin sign-in')}</h1>
+        <div className="form-group">
+          <label className="form-label" htmlFor="admin-user">{t('שם משתמש', 'Username')}</label>
+          <input id="admin-user" className="form-input" dir="ltr" autoComplete="username" autoCapitalize="off" spellCheck={false} autoFocus value={user} onChange={(e) => { setUser(e.target.value); setFailed(false) }} />
+        </div>
+        <div className="form-group">
+          <label className="form-label" htmlFor="admin-password">{t('סיסמה', 'Password')}</label>
+          <input id="admin-password" className="form-input" type="password" dir="ltr" autoComplete="current-password" value={password} onChange={(e) => { setPassword(e.target.value); setFailed(false) }} />
+        </div>
+        {failed && <p className="form-error" role="alert">{t('שם המשתמש או הסיסמה שגויים', 'Wrong username or password')}</p>}
+        <button className="form-submit" type="submit">{t('כניסה', 'Sign in')}</button>
+      </form>
+    </section>
+  )
+}
+
 export function Admin() {
+  const [signedIn, setSignedIn] = useState(readSession)
+  const setSession = (next: boolean) => {
+    writeSession(next)
+    setSignedIn(next)
+  }
+  if (!signedIn) return <AdminLogin onSignIn={() => setSession(true)} />
+  return <AdminPanel onSignOut={() => setSession(false)} />
+}
+
+function AdminPanel({ onSignOut }: { onSignOut: () => void }) {
   const { t } = useI18n()
   const [tab, setTab] = useState<'letters' | 'families'>('letters')
   const [viewing, setViewing] = useState<Letter | null>(null)
@@ -330,7 +394,12 @@ export function Admin() {
       <section className={`chooser ${viewing ? 'no-print' : ''}`}>
         <div className="container">
           <p className="section-label">{t('ניהול', 'Admin')}</p>
-          <h1 className="section-title">{t('המכתבים לפי משפחה', 'Letters by Family')}</h1>
+          <div className="admin-title-row">
+            <h1 className="section-title">{t('המכתבים לפי משפחה', 'Letters by Family')}</h1>
+            <button className="btn btn-secondary admin-signout" onClick={onSignOut}>
+              {t('יציאה', 'Sign out')}
+            </button>
+          </div>
           <p className="demo-note" role="note">
             {t(
               'מסך הדגמה: עדיין אין שמירה. שינויים ומכתבים נמחקים ברענון הדף, והמכתבים המסומנים "דוגמה" אינם אמיתיים.',
