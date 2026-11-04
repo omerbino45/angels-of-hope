@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Modal } from '../components/Modal'
+import { CONTACT_EMAIL } from '../data/contact'
 import { useI18n } from '../i18n'
 import { gregDateStr, hebrewDateStr, parseGregDate } from '../lib/dates'
 import { useStore } from '../store'
@@ -276,6 +277,19 @@ export function Home() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="contact" id="contact">
+        <div className="container">
+          <p className="section-label">{t('דברו איתנו', 'Talk to Us')}</p>
+          <h2 className="section-title">{t('צרו איתנו קשר!', 'Get in Touch!')}</h2>
+          <p className="section-text contact-text">
+            {t('רוצים לשאול שאלה, להצטרף או לספר על משפחה? נשמח לשמוע מכם.', 'Want to ask a question, join us or tell us about a family? We would love to hear from you.')}
+          </p>
+          <a className="btn btn-primary contact-email" href={`mailto:${CONTACT_EMAIL}`} dir="ltr">
+            {CONTACT_EMAIL}
+          </a>
         </div>
       </section>
 
