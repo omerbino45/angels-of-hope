@@ -9,10 +9,13 @@ export interface Family {
   acceptsLetters: boolean
 }
 
-export type StickerRef =
-  | { kind: 'emoji'; value: string }
-  | { kind: 'israel' }
-  | { kind: 'unit'; label: string; colors: [string, string] }
+export interface StickerRef {
+  src: string
+  he: string
+  en: string
+  flag?: boolean
+  emblem?: boolean
+}
 
 export interface SongData {
   url: string
@@ -65,6 +68,7 @@ export interface Letter {
   design: LetterDesign
   writer: string
   email: string
+  phone: string
   isPublic: boolean
   signature: string
   status: LetterStatus

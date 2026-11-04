@@ -1,4 +1,5 @@
 import { forwardRef, useEffect, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { getBackgroundImage } from '../data/backgrounds'
 import { allThemes, fonts } from '../data/studio'
 import { useI18n } from '../i18n'
 import type { LetterDesign, LetterItem, StickerRef, Stroke } from '../types'
@@ -38,7 +39,13 @@ function starSvg(cx: number, cy: number, r: number, color: string, width: number
     .join('')
 }
 
-function PaperBackground({ bgId, accent, flagColor }: { bgId: string; accent: string; flagColor: string }) {
+// The text color a page gets until the writer picks one.
+export function autoInk(bgId: string, themeInk: string) {
+  const bg = getBackgroundImage(bgId)
+  return bg ? (bg.tone === 'dark' ? '#f7f2e8' : '#0d1f3c') : themeInk
+}
+
+export function PaperBackground({ bgId, accent, flagColor }: { bgId: string; accent: string; flagColor: string }) {
   if (bgId === 'frame') {
     return (
       <div className="bg-layer">
@@ -62,7 +69,7 @@ function PaperBackground({ bgId, accent, flagColor }: { bgId: string; accent: st
   if (bgId === 'stars') {
     return (
       <div
-        className="bg-layer bg-tile"
+        className="bg-layer bg-tile-repeat"
         style={{ backgroundImage: svgUri(`<g opacity='.13'>${starSvg(30, 30, 11, accent, 1.2)}</g>`, 60) }}
       />
     )
@@ -70,7 +77,7 @@ function PaperBackground({ bgId, accent, flagColor }: { bgId: string; accent: st
   if (bgId === 'hearts') {
     return (
       <div
-        className="bg-layer bg-tile"
+        className="bg-layer bg-tile-repeat"
         style={{
           backgroundImage: svgUri(
             `<path opacity='.13' fill='${accent}' d='M30 42 C16 32 14 24 19 20 C23 17 28 19 30 23 C32 19 37 17 41 20 C46 24 44 32 30 42 Z'/>`,
@@ -96,29 +103,7 @@ function PaperBackground({ bgId, accent, flagColor }: { bgId: string; accent: st
 }
 
 export function StickerVisual({ sticker }: { sticker: StickerRef }) {
-  if (sticker.kind === 'emoji') return <span className="sticker-emoji">{sticker.value}</span>
-  if (sticker.kind === 'israel') {
-    return (
-      <svg className="sticker-svg" viewBox="0 0 110 80" role="img" aria-label="דגל ישראל">
-        <rect width="110" height="80" fill="#fff" stroke="#d8dde6" />
-        <rect y="8" width="110" height="12" fill="#1f4fa8" />
-        <rect y="60" width="110" height="12" fill="#1f4fa8" />
-        {star(55, 40, 14).map((p) => (
-          <polygon key={p} points={p} fill="none" stroke="#1f4fa8" strokeWidth="3" />
-        ))}
-      </svg>
-    )
-  }
-  const [bg, fg] = sticker.colors
-  return (
-    <svg className="sticker-svg" viewBox="0 0 110 80" role="img" aria-label={sticker.label}>
-      <rect width="110" height="80" rx="3" fill={bg} />
-      <rect y="62" width="110" height="18" fill={fg} opacity=".85" />
-      <text x="55" y="42" textAnchor="middle" dominantBaseline="middle" fontFamily="Heebo, sans-serif" fontWeight="700" fontSize="20" fill={fg}>
-        {sticker.label}
-      </text>
-    </svg>
-  )
+  return <img className="sticker-img" src={sticker.src} alt={sticker.he} draggable={false} />
 }
 
 function ItemContent({ item }: { item: LetterItem }) {
@@ -152,7 +137,11 @@ export const LetterPaper = forwardRef<HTMLDivElement, Props>(function LetterPape
 
   const theme = allThemes.find((x) => x.id === design.themeId) ?? allThemes[0]
   const font = fonts.find((x) => x.id === design.fontId) ?? fonts[0]
-  const ink = design.ink ?? theme.ink
+  const bgImage = getBackgroundImage(design.bgId)
+  const onDarkPaper = bgImage ? bgImage.tone === 'dark' : false
+  const themeIsDark = theme.ink.startsWith('#f')
+  const ink = design.ink ?? autoInk(design.bgId, theme.ink)
+  const accent = bgImage ? (onDarkPaper ? '#e6c86e' : themeIsDark ? '#2563a8' : theme.accent) : theme.accent
   const fontRatio = design.baseRatio * design.size * font.scale
 
   useEffect(() => {
@@ -308,9 +297,22 @@ export const LetterPaper = forwardRef<HTMLDivElement, Props>(function LetterPape
         style={{ background: theme.paper, color: ink, fontFamily: font.family }}
       >
         <div className="paper-inner" style={{ minHeight: `${minHeight}cqw` }}>
-          <PaperBackground bgId={design.bgId} accent={theme.accent} flagColor={theme.id === 'dusk' ? '#4a89c8' : '#1f4fa8'} />
-          <div className="paper-content" style={{ fontSize: `${fontRatio * 100}cqw` }}>
-            <p className="paper-greeting" style={{ color: theme.accent }}>{greeting}</p>
+          {bgImage ? (
+            <div className="bg-layer bg-photo" style={{ backgroundImage: `url("${bgImage.src}")` }} />
+          ) : (
+            <PaperBackground bgId={design.bgId} accent={theme.accent} flagColor={themeIsDark ? '#4a89c8' : '#1f4fa8'} />
+          )}
+          <div
+            className="paper-content"
+            style={{
+              fontSize: `${fontRatio * 100}cqw`,
+              ...(bgImage?.pad?.t !== undefined && { paddingTop: `${bgImage.pad.t}cqw` }),
+              ...(bgImage?.pad?.b !== undefined && { paddingBottom: `${bgImage.pad.b}cqw` }),
+              ...(bgImage?.pad?.r !== undefined && { paddingRight: `${bgImage.pad.r}cqw` }),
+              ...(bgImage?.pad?.l !== undefined && { paddingLeft: `${bgImage.pad.l}cqw` }),
+            }}
+          >
+            <p className="paper-greeting" style={{ color: accent }}>{greeting}</p>
             <div
               ref={editorRef}
               className={`paper-text ${design.bgId === 'lines' ? 'paper-lined' : ''}`}
@@ -335,7 +337,7 @@ export const LetterPaper = forwardRef<HTMLDivElement, Props>(function LetterPape
               {editable ? null : text}
             </div>
             {signature && <p className="paper-sign">{signature}</p>}
-            <p className="paper-foot" style={{ color: theme.accent }}>מלאכים של תקווה</p>
+            <p className="paper-foot" style={{ color: accent }}>מלאכים של תקווה</p>
           </div>
 
           <svg className="stroke-layer" viewBox="0 0 1000 6000" aria-hidden="true">

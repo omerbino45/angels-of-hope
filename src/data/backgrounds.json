@@ -1,0 +1,555 @@
+[
+ {
+  "id": "flag",
+  "he": "דגל ישראל",
+  "en": "Israeli flag",
+  "items": [
+   {
+    "id": "flag-cloth",
+    "he": "דגל ישראל: בד",
+    "en": "Israeli flag: cloth",
+    "tone": "light",
+    "pad": {
+     "t": 29,
+     "b": 29
+    }
+   },
+   {
+    "id": "flag-hanging",
+    "he": "דגל ישראל: אנכי",
+    "en": "Israeli flag: hanging",
+    "tone": "light",
+    "pad": {
+     "r": 23,
+     "l": 23,
+     "t": 12
+    }
+   },
+   {
+    "id": "flag-soft",
+    "he": "דגל ישראל: קפלים רכים",
+    "en": "Israeli flag: soft folds",
+    "tone": "light",
+    "pad": {
+     "t": 29,
+     "b": 29
+    }
+   },
+   {
+    "id": "flag-deep",
+    "he": "דגל ישראל: קפלים עמוקים",
+    "en": "Israeli flag: deep folds",
+    "tone": "light",
+    "pad": {
+     "r": 23,
+     "l": 23,
+     "t": 12
+    }
+   },
+   {
+    "id": "flag-night",
+    "he": "דגל ישראל: לילה",
+    "en": "Israeli flag: night",
+    "tone": "dark",
+    "pad": {
+     "t": 29,
+     "b": 29
+    }
+   },
+   {
+    "id": "flag-sky",
+    "he": "דגל בשמיים",
+    "en": "Flag in the sky",
+    "tone": "light",
+    "pad": {
+     "t": 64
+    }
+   },
+   {
+    "id": "flag-sky-sun",
+    "he": "דגל בשמש",
+    "en": "Flag in the sun",
+    "tone": "light",
+    "pad": {
+     "t": 64
+    }
+   },
+   {
+    "id": "flag-dusk",
+    "he": "דגל בשקיעה",
+    "en": "Flag at sunset",
+    "tone": "light",
+    "pad": {
+     "t": 64
+    }
+   }
+  ]
+ },
+ {
+  "id": "candle",
+  "he": "נרות",
+  "en": "Candles",
+  "items": [
+   {
+    "id": "candle-glow",
+    "he": "נר בחושך",
+    "en": "Candle in the dark",
+    "tone": "dark",
+    "pad": {
+     "b": 45
+    }
+   },
+   {
+    "id": "candle-warm",
+    "he": "נר חם",
+    "en": "Warm candle",
+    "tone": "dark",
+    "pad": {
+     "b": 45
+    }
+   },
+   {
+    "id": "candle-blue",
+    "he": "נר בלילה כחול",
+    "en": "Candle in blue night",
+    "tone": "dark",
+    "pad": {
+     "b": 45
+    }
+   },
+   {
+    "id": "ph-9",
+    "he": "פנסים בגינה",
+    "en": "Lanterns in a garden",
+    "tone": "dark"
+   },
+   {
+    "id": "ph-10",
+    "he": "נר דק",
+    "en": "Slim candle",
+    "tone": "dark"
+   },
+   {
+    "id": "ph-12",
+    "he": "נר בכוס זכוכית",
+    "en": "Candle in glass",
+    "tone": "dark"
+   },
+   {
+    "id": "ph-14",
+    "he": "להבה בחושך",
+    "en": "Flame in the dark",
+    "tone": "dark"
+   },
+   {
+    "id": "ph-15",
+    "he": "נר ואורות",
+    "en": "Candle and lights",
+    "tone": "dark"
+   },
+   {
+    "id": "ph-16",
+    "he": "נר קטן ואורות",
+    "en": "Small candle and lights",
+    "tone": "dark"
+   },
+   {
+    "id": "ph-19",
+    "he": "נרות אדומים",
+    "en": "Red candles",
+    "tone": "dark"
+   },
+   {
+    "id": "ph-20",
+    "he": "נרות לבנים",
+    "en": "White candles",
+    "tone": "dark"
+   },
+   {
+    "id": "ph-21",
+    "he": "נר אדום",
+    "en": "Red candle",
+    "tone": "dark"
+   },
+   {
+    "id": "ph-22",
+    "he": "נרות חמים",
+    "en": "Warm candles",
+    "tone": "dark"
+   },
+   {
+    "id": "ph-29",
+    "he": "פנסים בלילה",
+    "en": "Lanterns at night",
+    "tone": "dark"
+   },
+   {
+    "id": "ph-33",
+    "he": "להבה עדינה",
+    "en": "Gentle flame",
+    "tone": "dark"
+   },
+   {
+    "id": "ph-35",
+    "he": "נר עמוד",
+    "en": "Pillar candle",
+    "tone": "dark"
+   }
+  ]
+ },
+ {
+  "id": "greeting",
+  "he": "ברכות ופרחים",
+  "en": "Greeting cards",
+  "items": [
+   {
+    "id": "card-gold",
+    "he": "פרחים על קלף זהב",
+    "en": "Flowers on gold parchment",
+    "tone": "light"
+   },
+   {
+    "id": "card-blue",
+    "he": "פרחים כחולים",
+    "en": "Blue flowers",
+    "tone": "light"
+   },
+   {
+    "id": "card-rose",
+    "he": "פרחים ורודים",
+    "en": "Pink flowers",
+    "tone": "light"
+   },
+   {
+    "id": "card-lav",
+    "he": "פרחי לבנדר",
+    "en": "Lavender flowers",
+    "tone": "light"
+   },
+   {
+    "id": "card-sage",
+    "he": "פרחים ירוקים",
+    "en": "Sage flowers",
+    "tone": "light"
+   },
+   {
+    "id": "card-coral",
+    "he": "פרחים כתומים",
+    "en": "Coral flowers",
+    "tone": "light"
+   },
+   {
+    "id": "card-ivory",
+    "he": "פרחים על שנהב",
+    "en": "Flowers on ivory",
+    "tone": "light"
+   },
+   {
+    "id": "card-azure",
+    "he": "פרחי תכלת על קלף",
+    "en": "Azure flowers on parchment",
+    "tone": "light"
+   }
+  ]
+ },
+ {
+  "id": "watercolor",
+  "he": "צבעי מים",
+  "en": "Watercolor",
+  "items": [
+   {
+    "id": "wc-hope",
+    "he": "צבעי מים: תקווה",
+    "en": "Watercolor: hope",
+    "tone": "light"
+   },
+   {
+    "id": "wc-sunset",
+    "he": "צבעי מים: שקיעה",
+    "en": "Watercolor: sunset",
+    "tone": "light"
+   },
+   {
+    "id": "wc-blush",
+    "he": "צבעי מים: ורוד",
+    "en": "Watercolor: blush",
+    "tone": "light"
+   },
+   {
+    "id": "wc-lav",
+    "he": "צבעי מים: סגול",
+    "en": "Watercolor: lavender",
+    "tone": "light"
+   },
+   {
+    "id": "wc-sage",
+    "he": "צבעי מים: ירוק",
+    "en": "Watercolor: sage",
+    "tone": "light"
+   },
+   {
+    "id": "wc-sea",
+    "he": "צבעי מים: ים",
+    "en": "Watercolor: sea",
+    "tone": "light"
+   },
+   {
+    "id": "wc-gold",
+    "he": "צבעי מים: זהב",
+    "en": "Watercolor: gold",
+    "tone": "light"
+   },
+   {
+    "id": "wc-top",
+    "he": "צבעי מים: שמיים",
+    "en": "Watercolor: sky",
+    "tone": "light"
+   }
+  ]
+ },
+ {
+  "id": "frame",
+  "he": "מסגרות זהב",
+  "en": "Gold frames",
+  "items": [
+   {
+    "id": "frame-cream",
+    "he": "מסגרת זהב על שמנת",
+    "en": "Gold frame on cream",
+    "tone": "light"
+   },
+   {
+    "id": "frame-white",
+    "he": "מסגרת זהב על לבן",
+    "en": "Gold frame on white",
+    "tone": "light"
+   },
+   {
+    "id": "frame-sky",
+    "he": "מסגרת זהב על תכלת",
+    "en": "Gold frame on pale blue",
+    "tone": "light"
+   },
+   {
+    "id": "frame-navy",
+    "he": "מסגרת זהב על כחול",
+    "en": "Gold frame on navy",
+    "tone": "dark"
+   },
+   {
+    "id": "frame-wine",
+    "he": "מסגרת זהב על בורדו",
+    "en": "Gold frame on wine",
+    "tone": "dark"
+   },
+   {
+    "id": "frame-green",
+    "he": "מסגרת זהב על ירוק",
+    "en": "Gold frame on green",
+    "tone": "dark"
+   }
+  ]
+ },
+ {
+  "id": "flowers",
+  "he": "פרחים",
+  "en": "Flowers",
+  "items": [
+   {
+    "id": "ph-63",
+    "he": "ורד צהוב",
+    "en": "Yellow rose",
+    "tone": "light"
+   },
+   {
+    "id": "ph-64",
+    "he": "צבעונים בחלון",
+    "en": "Tulips by a window",
+    "tone": "light"
+   },
+   {
+    "id": "ph-154",
+    "he": "שושנים מצוירות",
+    "en": "Painted lilies",
+    "tone": "light"
+   },
+   {
+    "id": "ph-157",
+    "he": "פעמוני שלג",
+    "en": "Lily of the valley",
+    "tone": "light"
+   },
+   {
+    "id": "ph-153",
+    "he": "פעמונים ירוקים",
+    "en": "Green bells",
+    "tone": "light"
+   },
+   {
+    "id": "ph-287",
+    "he": "פרח כחול",
+    "en": "Blue flower",
+    "tone": "light"
+   }
+  ]
+ },
+ {
+  "id": "nature",
+  "he": "שמיים ואור",
+  "en": "Sky & light",
+  "items": [
+   {
+    "id": "light-gold",
+    "he": "אורות זהב",
+    "en": "Golden lights",
+    "tone": "dark"
+   },
+   {
+    "id": "light-blue",
+    "he": "אורות כחולים",
+    "en": "Blue lights",
+    "tone": "dark"
+   },
+   {
+    "id": "light-pastel",
+    "he": "אורות רכים",
+    "en": "Soft lights",
+    "tone": "light"
+   },
+   {
+    "id": "dawn-peach",
+    "he": "עננים בזריחה",
+    "en": "Clouds at dawn",
+    "tone": "light"
+   },
+   {
+    "id": "dawn-rose",
+    "he": "עננים ורודים",
+    "en": "Pink clouds",
+    "tone": "light"
+   },
+   {
+    "id": "dawn-sky",
+    "he": "שמיים פתוחים",
+    "en": "Open sky",
+    "tone": "light"
+   },
+   {
+    "id": "ph-232",
+    "he": "ים בזריחה",
+    "en": "Sea at dawn",
+    "tone": "light"
+   },
+   {
+    "id": "ph-234",
+    "he": "שקיעה בעננים",
+    "en": "Sunset in clouds",
+    "tone": "light"
+   },
+   {
+    "id": "ph-235",
+    "he": "שמיים בערב",
+    "en": "Evening sky",
+    "tone": "light"
+   },
+   {
+    "id": "ph-243",
+    "he": "עננים צבעוניים",
+    "en": "Colorful clouds",
+    "tone": "light"
+   },
+   {
+    "id": "ph-244",
+    "he": "אופק רך",
+    "en": "Soft horizon",
+    "tone": "light"
+   }
+  ]
+ },
+ {
+  "id": "fields",
+  "he": "שדות",
+  "en": "Fields",
+  "items": [
+   {
+    "id": "ph-313",
+    "he": "שיבולים זהובות",
+    "en": "Golden wheat",
+    "tone": "light"
+   },
+   {
+    "id": "ph-315",
+    "he": "שיבולת באור",
+    "en": "Wheat in the light",
+    "tone": "light"
+   },
+   {
+    "id": "ph-318",
+    "he": "שדה ועץ",
+    "en": "Field and tree",
+    "tone": "light"
+   },
+   {
+    "id": "ph-321",
+    "he": "שיבולת קרובה",
+    "en": "Wheat close up",
+    "tone": "light"
+   },
+   {
+    "id": "ph-326",
+    "he": "שיבולים ושמיים",
+    "en": "Wheat and sky",
+    "tone": "light"
+   },
+   {
+    "id": "ph-309",
+    "he": "שדה חיטה",
+    "en": "Wheat field",
+    "tone": "light"
+   }
+  ]
+ },
+ {
+  "id": "paper",
+  "he": "נייר וקלף",
+  "en": "Paper",
+  "items": [
+   {
+    "id": "ph-213",
+    "he": "קלף בהיר",
+    "en": "Light parchment",
+    "tone": "light"
+   },
+   {
+    "id": "ph-214",
+    "he": "קלף עתיק",
+    "en": "Old parchment",
+    "tone": "light"
+   },
+   {
+    "id": "ph-217",
+    "he": "נייר חום",
+    "en": "Brown paper",
+    "tone": "light"
+   },
+   {
+    "id": "ph-173",
+    "he": "נייר שנהב",
+    "en": "Ivory paper",
+    "tone": "light"
+   },
+   {
+    "id": "ph-177",
+    "he": "נייר וינטג׳",
+    "en": "Vintage paper",
+    "tone": "light"
+   },
+   {
+    "id": "ph-226",
+    "he": "קלף חום",
+    "en": "Brown parchment",
+    "tone": "light"
+   }
+  ]
+ }
+]

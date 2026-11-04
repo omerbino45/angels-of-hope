@@ -173,7 +173,18 @@ function LettersTab({ onView, onPrintAll }: { onView: (letter: Letter) => void; 
                     {l.isPublic && <span className="badge badge-public">{t('מאושר לפרסום', 'May be public')}</span>}
                     <div className="letter-meta">
                       {new Intl.DateTimeFormat('he-IL').format(l.createdAt)}
-                      {l.email && ` · ${l.email}`}
+                      {l.phone && (
+                        <>
+                          {' · '}
+                          <a href={`tel:${l.phone}`} dir="ltr">{l.phone}</a>
+                        </>
+                      )}
+                      {l.email && (
+                        <>
+                          {' · '}
+                          <a href={`mailto:${l.email}`} dir="ltr">{l.email}</a>
+                        </>
+                      )}
                     </div>
                   </div>
                   <div className="letter-row-actions">

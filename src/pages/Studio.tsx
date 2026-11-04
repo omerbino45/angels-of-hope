@@ -1,17 +1,22 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useBlocker, useNavigate, useParams } from 'react-router-dom'
 import QRCode from 'qrcode'
-import { LetterPaper, StickerVisual } from '../components/LetterPaper'
+import { InkPicker } from '../components/InkPicker'
+import { autoInk, LetterPaper, PaperBackground, StickerVisual } from '../components/LetterPaper'
 import { Modal } from '../components/Modal'
 import { GENERAL_ID } from '../data/families'
-import { backgrounds, blankTheme, fonts, penColors, penWidths, sizes, stickerCategories, themes, writingPrompts } from '../data/studio'
+import { getBackgroundImage } from '../data/backgrounds'
+import { backgroundCategories } from '../data/backgrounds'
+import { patterns, blankTheme, fonts, penColors, penWidths, sizes, stickerCategories, themes, writingPrompts } from '../data/studio'
 import { useI18n } from '../i18n'
 import { gregDateStr, hebrewDateStr, parseGregDate } from '../lib/dates'
 import { downloadPng, fetchSpotifyInfo, parseSpotifyUrl, readImage } from '../lib/export'
 import { useStore } from '../store'
 import type { Family, LetterDesign, LetterItem, StickerRef } from '../types'
+import candle from '../assets/stickers/icons/candle.svg'
+import heart from '../assets/stickers/icons/heart-blue.svg'
 
-type Tab = 'stickers' | 'draw' | 'image' | 'song' | 'prompts'
+type Tab = 'backgrounds' | 'stickers' | 'draw' | 'image' | 'song' | 'prompts'
 
 const newId = () => crypto.randomUUID()
 
@@ -41,7 +46,7 @@ function FallenPanel({ family }: { family: Family | null }) {
         {family.photo ? (
           <img src={family.photo} alt={family.fallen} />
         ) : (
-          <span aria-hidden="true">🕯️</span>
+          <img className="fallen-candle" src={candle} alt="" />
         )}
       </div>
       <p className="fallen-label">{t('לזכר', 'In memory of')}</p>
@@ -95,6 +100,7 @@ export function Studio() {
   const [penColor, setPenColor] = useState(penColors[0])
   const [penWidth, setPenWidth] = useState(penWidths[1])
   const [category, setCategory] = useState(stickerCategories[0].id)
+  const [bgCategory, setBgCategory] = useState(backgroundCategories[0].id)
   const [songUrl, setSongUrl] = useState('')
   const [songLines, setSongLines] = useState('')
   const [songError, setSongError] = useState('')
@@ -103,6 +109,7 @@ export function Studio() {
   const [submitOpen, setSubmitOpen] = useState(false)
   const [writer, setWriter] = useState('')
   const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
   const [isPublic, setIsPublic] = useState(false)
   const [formError, setFormError] = useState('')
   const [signoff, setSignoff] = useState('')
@@ -115,6 +122,8 @@ export function Studio() {
 
   const greeting = useMemo(() => greetingFor(family, lang === 'en'), [family, lang])
   const prompts = useMemo(() => writingPrompts(family?.fallen || null), [family])
+
+  const currentTheme = [...themes, blankTheme].find((x) => x.id === design.themeId)!
 
   const dirty = !sent && (text.trim() !== '' || design.items.length > 0 || design.strokes.length > 0)
   const blocker = useBlocker(({ currentLocation, nextLocation }) => dirty && currentLocation.pathname !== nextLocation.pathname)
@@ -152,21 +161,26 @@ export function Studio() {
   const placementY = (w: number) => {
     const rect = paperColRef.current?.querySelector('.paper')?.getBoundingClientRect()
     if (!rect) return 0.1
-    const visibleMid = (Math.max(rect.top, 80) + Math.min(rect.bottom, window.innerHeight - 180)) / 2
+    const dockTop = paperColRef.current?.querySelector('.dock')?.getBoundingClientRect().top ?? window.innerHeight
+    const toolbarBottom = paperColRef.current?.querySelector('.toolbar')?.getBoundingClientRect().bottom ?? 80
+    const visibleMid = (Math.max(rect.top, toolbarBottom) + Math.min(rect.bottom, dockTop)) / 2
     return Math.max(0.02, (visibleMid - rect.top) / rect.width - w / 2)
   }
 
   const addItem = (item: LetterItem) => setItems([...design.items, item])
 
   const addSticker = (sticker: StickerRef) => {
-    const w = sticker.kind === 'emoji' ? 0.12 : 0.2
+    const w = sticker.flag ? 0.3 : sticker.emblem ? 0.22 : 0.16
+    // On a phone the open panel covers the page, so close it to show where the sticker landed.
+    if (window.innerWidth < 680) setTab(null)
     addItem({
       id: newId(),
       type: 'sticker',
       sticker,
       w,
       x: 0.5 - w / 2 + (design.items.length % 5) * 0.03,
-      y: placementY(w),
+      // Nudged so stickers added in a row don't land exactly on top of each other.
+      y: placementY(w) + (design.items.length % 5) * 0.03,
     })
   }
 
@@ -233,7 +247,8 @@ export function Studio() {
       setTab('draw')
       setDrawing(true)
     } else {
-      patch({ themeId: id, ink: undefined })
+      // A photo background would hide the theme's paper color, so picking a theme goes back to a plain page.
+      patch({ themeId: id, ink: undefined, ...(getBackgroundImage(design.bgId) && { bgId: 'plain' }) })
     }
   }
 
@@ -258,8 +273,16 @@ export function Studio() {
       setFormError(t('נא למלא שם.', 'Please enter your name.'))
       return
     }
+    if (!email.trim() && !phone.trim()) {
+      setFormError(t('נא למלא מייל או טלפון, כדי שנוכל לחזור אליכם.', 'Please enter an email or a phone number, so we can get back to you.'))
+      return
+    }
     if (email.trim() && !/^\S+@\S+\.\S+$/.test(email.trim())) {
       setFormError(t('כתובת המייל לא נראית תקינה.', "That email address doesn't look right."))
+      return
+    }
+    if (phone.trim() && !/^\+?[\d\s()-]{9,16}$/.test(phone.trim())) {
+      setFormError(t('מספר הטלפון לא נראה תקין.', "That phone number doesn't look right."))
       return
     }
     addLetter({
@@ -270,6 +293,7 @@ export function Studio() {
       design,
       writer: writer.trim(),
       email: email.trim(),
+      phone: phone.trim(),
       isPublic,
       signature,
       status: 'new',
@@ -304,10 +328,10 @@ export function Studio() {
             </div>
             <div className="envelope">
               <div className="envelope-flap" />
-              <div className="envelope-seal">💙</div>
+              <div className="envelope-seal"><img src={heart} alt="" /></div>
             </div>
           </div>
-          <h1 className="section-title">{t('תודה רבה! 💙', 'Thank You! 💙')}</h1>
+          <h1 className="section-title">{t('תודה רבה!', 'Thank You!')}</h1>
           <p className="section-text sent-text">
             {t('המכתב שלך יועבר למשפחה בקרוב. מכתב אחד יכול להאיר יום שלם.', 'Your letter will be delivered soon. One letter can light up an entire day.')}
           </p>
@@ -358,16 +382,6 @@ export function Studio() {
               </select>
             </div>
             <div className="toolbar-group">
-              <label className="toolbar-label" htmlFor="bg-select">{t('רקע', 'Background')}</label>
-              <select id="bg-select" className="toolbar-select" value={design.bgId} onChange={(e) => patch({ bgId: e.target.value })}>
-                {backgrounds.map((b) => (
-                  <option key={b.id} value={b.id}>
-                    {t(b.he, b.en)}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="toolbar-group">
               <label className="toolbar-label" htmlFor="size-select">{t('גודל', 'Size')}</label>
               <select id="size-select" className="toolbar-select" value={design.size} onChange={(e) => patch({ size: Number(e.target.value) })}>
                 {sizes.map((s) => (
@@ -377,16 +391,7 @@ export function Studio() {
                 ))}
               </select>
             </div>
-            <div className="toolbar-group desktop-only">
-              <label className="toolbar-label" htmlFor="ink-input">{t('צבע טקסט', 'Text color')}</label>
-              <input
-                id="ink-input"
-                className="toolbar-color"
-                type="color"
-                value={design.ink ?? [...themes, blankTheme].find((x) => x.id === design.themeId)!.ink}
-                onChange={(e) => patch({ ink: e.target.value })}
-              />
-            </div>
+            <InkPicker value={design.ink} autoColor={autoInk(design.bgId, currentTheme.ink)} onChange={(ink) => patch({ ink })} />
           </div>
 
           <LetterPaper
@@ -406,6 +411,39 @@ export function Studio() {
           <div className="dock no-print">
             {tab && (
               <div className="dock-panel">
+                {tab === 'backgrounds' && (
+                  <>
+                    <div className="chip-row" role="group" aria-label={t('קטגוריות רקע', 'Background categories')}>
+                      {backgroundCategories.map((c) => (
+                        <button key={c.id} className={`chip ${bgCategory === c.id ? 'is-active' : ''}`} aria-pressed={bgCategory === c.id} onClick={() => setBgCategory(c.id)}>
+                          {t(c.he, c.en)}
+                        </button>
+                      ))}
+                      <button className={`chip ${bgCategory === 'patterns' ? 'is-active' : ''}`} aria-pressed={bgCategory === 'patterns'} onClick={() => setBgCategory('patterns')}>
+                        {t('דוגמאות פשוטות', 'Simple patterns')}
+                      </button>
+                    </div>
+                    <div className="bg-grid">
+                      {bgCategory === 'patterns'
+                        ? patterns.map((b) => (
+                            <button key={b.id} className={`bg-tile ${design.bgId === b.id ? 'is-active' : ''}`} aria-pressed={design.bgId === b.id} onClick={() => patch({ bgId: b.id, ink: undefined })}>
+                              <span className="bg-tile-pattern" style={{ background: currentTheme.paper }}>
+                                <PaperBackground bgId={b.id} accent={currentTheme.accent} flagColor="#1f4fa8" />
+                              </span>
+                              <span className="bg-tile-name">{t(b.he, b.en)}</span>
+                            </button>
+                          ))
+                        : backgroundCategories
+                            .find((c) => c.id === bgCategory)!
+                            .items.map((b) => (
+                              <button key={b.id} className={`bg-tile ${design.bgId === b.id ? 'is-active' : ''}`} aria-pressed={design.bgId === b.id} onClick={() => patch({ bgId: b.id, ink: undefined })}>
+                                <img src={b.thumb} alt="" loading="lazy" />
+                                <span className="bg-tile-name">{t(b.he, b.en)}</span>
+                              </button>
+                            ))}
+                    </div>
+                  </>
+                )}
                 {tab === 'stickers' && (
                   <>
                     <div className="chip-row" role="group" aria-label={t('קטגוריות', 'Categories')}>
@@ -415,17 +453,19 @@ export function Studio() {
                         </button>
                       ))}
                     </div>
-                    <div className="sticker-grid">
+                    <div className={`sticker-grid ${category === 'units' || category === 'emblems' ? 'sticker-grid-flags' : ''}`}>
                       {stickerCategories
                         .find((c) => c.id === category)!
                         .stickers.map((s, i) => (
                           <button
                             key={i}
                             className="sticker-btn"
-                            aria-label={s.kind === 'emoji' ? s.value : s.kind === 'unit' ? s.label : t('דגל ישראל', 'Israeli flag')}
+                            title={t(s.he, s.en)}
+                            aria-label={t(s.he, s.en)}
                             onClick={() => addSticker(s)}
                           >
                             <StickerVisual sticker={s} />
+                            {(category === 'units' || category === 'emblems') && <span className="sticker-caption">{s.he}</span>}
                           </button>
                         ))}
                     </div>
@@ -492,6 +532,7 @@ export function Studio() {
               <div className="dock-tabs" role="group" aria-label={t('כלים', 'Tools')}>
                 {(
                   [
+                    ['backgrounds', 'רקעים', 'Backgrounds'],
                     ['stickers', 'סטיקרים', 'Stickers'],
                     ['draw', 'ציור', 'Draw'],
                     ['image', 'תמונה', 'Photo'],
@@ -514,7 +555,7 @@ export function Studio() {
                   {exporting ? t('מכינים...', 'Preparing...') : t('הורדת תמונה', 'Save image')}
                 </button>
                 <button className="btn btn-primary dock-send" disabled={empty} onClick={openSubmit}>
-                  {t('סיימתי, שליחה 💙', 'Done, send 💙')}
+                  {t('סיימתי, שליחה', 'Done, send')}
                 </button>
               </div>
             </div>
@@ -549,11 +590,16 @@ export function Studio() {
           </div>
           <div className="form-group">
             <label className="form-label" htmlFor="writer-name">{t('שם מלא', 'Full Name')}</label>
-            <input id="writer-name" className="form-input" value={writer} onChange={(e) => { setWriter(e.target.value); setFormError('') }} />
+            <input id="writer-name" className="form-input" autoComplete="name" value={writer} onChange={(e) => { setWriter(e.target.value); setFormError('') }} />
           </div>
           <div className="form-group">
-            <label className="form-label" htmlFor="writer-email">{t('כתובת מייל (לא חובה)', 'Email (optional)')}</label>
-            <input id="writer-email" className="form-input" type="email" dir="ltr" value={email} onChange={(e) => { setEmail(e.target.value); setFormError('') }} />
+            <label className="form-label" htmlFor="writer-email">{t('כתובת מייל', 'Email')}</label>
+            <input id="writer-email" className="form-input" type="email" dir="ltr" autoComplete="email" value={email} onChange={(e) => { setEmail(e.target.value); setFormError('') }} />
+          </div>
+          <div className="form-group">
+            <label className="form-label" htmlFor="writer-phone">{t('טלפון', 'Phone')}</label>
+            <input id="writer-phone" className="form-input" type="tel" dir="ltr" autoComplete="tel" value={phone} onChange={(e) => { setPhone(e.target.value); setFormError('') }} />
+            <p className="form-hint">{t('חובה למלא מייל או טלפון, לפחות אחד מהם.', 'An email or a phone number is required, at least one of them.')}</p>
           </div>
           <label className="check-row">
             <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />
@@ -561,7 +607,7 @@ export function Studio() {
           </label>
           {formError && <p className="form-error" role="alert">{formError}</p>}
           <button className="form-submit" onClick={submit}>
-            {t('שלחו את המכתב 💙', 'Send the Letter 💙')}
+            {t('שלחו את המכתב', 'Send the Letter')}
           </button>
           </div>
           </div>

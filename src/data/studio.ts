@@ -1,4 +1,5 @@
 import type { StickerRef } from '../types'
+import stickerData from './stickers.json'
 
 export interface Theme {
   id: string
@@ -15,7 +16,19 @@ export const themes: Theme[] = [
   { id: 'white', he: 'לבן נקי', en: 'Clean white', paper: '#ffffff', ink: '#0d1f3c', accent: '#4a89c8' },
   { id: 'sage', he: 'ירוק זית', en: 'Sage', paper: '#eef3ea', ink: '#2d4a35', accent: '#6b8f71' },
   { id: 'blush', he: 'ורוד עדין', en: 'Blush', paper: '#fbeff0', ink: '#5b2a3a', accent: '#c97b8e' },
+  { id: 'sky', he: 'תכלת', en: 'Sky', paper: '#eef6fd', ink: '#12385f', accent: '#3f8fd8' },
+  { id: 'ocean', he: 'ים', en: 'Ocean', paper: '#e6f2f5', ink: '#0c3b4a', accent: '#1f8aa5' },
+  { id: 'mint', he: 'מנטה', en: 'Mint', paper: '#e9f7f2', ink: '#134e43', accent: '#2fa58a' },
+  { id: 'olive', he: 'זית', en: 'Olive', paper: '#f2f1df', ink: '#3d4217', accent: '#7f8a2e' },
+  { id: 'sand', he: 'חול', en: 'Sand', paper: '#f6efe3', ink: '#4a3b28', accent: '#b08d57' },
+  { id: 'terracotta', he: 'טרקוטה', en: 'Terracotta', paper: '#fbeee6', ink: '#6a2f1a', accent: '#c8643c' },
+  { id: 'rosegold', he: 'רוז גולד', en: 'Rose gold', paper: '#fbf1ec', ink: '#5c3a32', accent: '#b8776a' },
+  { id: 'lavender', he: 'לבנדר', en: 'Lavender', paper: '#f3effb', ink: '#3d2b6b', accent: '#8a6fd1' },
   { id: 'dusk', he: 'כחול לילה', en: 'Night blue', paper: '#0f2d5e', ink: '#f5f0e8', accent: '#c9a84c' },
+  { id: 'forest', he: 'ירוק יער', en: 'Forest', paper: '#173a2c', ink: '#f0f5ea', accent: '#c9a84c' },
+  { id: 'wine', he: 'בורדו', en: 'Wine', paper: '#4a1622', ink: '#fbeee9', accent: '#e0b27a' },
+  { id: 'plum', he: 'שזיף', en: 'Plum', paper: '#3a1c3f', ink: '#f6ecf5', accent: '#d9a6d8' },
+  { id: 'charcoal', he: 'פחם', en: 'Charcoal', paper: '#2a2d33', ink: '#f2f0ea', accent: '#c9a84c' },
 ]
 
 /** The free-drawing page: picking it clears the background and opens the pen, mainly for children. */
@@ -23,7 +36,7 @@ export const blankTheme: Theme = { id: 'blank', he: 'דף לציור', en: 'Draw
 
 export const allThemes = [...themes, blankTheme]
 
-export const backgrounds = [
+export const patterns = [
   { id: 'plain', he: 'חלק', en: 'Plain' },
   { id: 'lines', he: 'שורות', en: 'Lined' },
   { id: 'frame', he: 'מסגרת', en: 'Frame' },
@@ -47,31 +60,26 @@ export const sizes = [
   { value: 1.2, he: 'גדול', en: 'Large' },
 ]
 
-const emoji = (values: string[]): StickerRef[] => values.map((value) => ({ kind: 'emoji', value }))
+const stickerFiles = import.meta.glob<string>('../assets/stickers/**/*.{svg,png}', { eager: true, query: '?url', import: 'default' })
 
-// Unit flags are generic colored pennants, not the official insignia.
-const unit = (label: string, a: string, b: string): StickerRef => ({ kind: 'unit', label, colors: [a, b] })
+export const stickerCategories = stickerData.map((category) => ({
+  ...category,
+  stickers: category.stickers.map(({ file, ...rest }): StickerRef => ({ ...rest, src: stickerFiles[`../assets/stickers/${file}`] })),
+}))
 
-export const stickerCategories: { id: string; he: string; en: string; stickers: StickerRef[] }[] = [
-  { id: 'love', he: 'לבבות ואהבה', en: 'Hearts & love', stickers: emoji(['💙', '🤍', '❤️', '💛', '💕', '💖', '🫶', '🥰']) },
-  { id: 'israel', he: 'מדינת ישראל', en: 'Israel', stickers: [{ kind: 'israel' }, ...emoji(['✡️', '🕊️', '🌾', '🌻', '🇮🇱'])] },
-  { id: 'memory', he: 'זיכרון', en: 'Remembrance', stickers: emoji(['🕯️', '🌹', '🌷', '🌿', '⭐', '🌟', '☀️', '🌈']) },
-  {
-    id: 'units',
-    he: 'דגלי יחידות',
-    en: 'Unit flags',
-    stickers: [
-      unit('גולני', '#6b4a1f', '#e0b83a'),
-      unit('גבעתי', '#5b2a86', '#ffffff'),
-      unit('צנחנים', '#a32430', '#ffffff'),
-      unit('נח"ל', '#2f7a3f', '#ffffff'),
-      unit('כפיר', '#3c5a2c', '#e8dcc8'),
-      unit('שריון', '#20242b', '#c9a84c'),
-      unit('הנדסה', '#b34a1d', '#ffffff'),
-      unit('תותחנים', '#23519b', '#e43d30'),
-    ],
-  },
-  { id: 'people', he: 'אנשים וחיבוק', en: 'People & hugs', stickers: emoji(['🤗', '🫂', '🙏', '🤝', '😊', '👨‍👩‍👧‍👦', '👐', '✍️']) },
+export const inkColors = [
+  { hex: '#111111', he: 'שחור', en: 'Black' },
+  { hex: '#0f2d5e', he: 'כחול כהה', en: 'Navy' },
+  { hex: '#2563a8', he: 'כחול', en: 'Blue' },
+  { hex: '#0f766e', he: 'טורקיז', en: 'Teal' },
+  { hex: '#2f7a3f', he: 'ירוק', en: 'Green' },
+  { hex: '#a67c1a', he: 'זהב', en: 'Gold' },
+  { hex: '#6a4a2a', he: 'חום', en: 'Brown' },
+  { hex: '#c0392b', he: 'אדום', en: 'Red' },
+  { hex: '#7a1f33', he: 'בורדו', en: 'Burgundy' },
+  { hex: '#5b3a9e', he: 'סגול', en: 'Purple' },
+  { hex: '#5f6670', he: 'אפור', en: 'Gray' },
+  { hex: '#ffffff', he: 'לבן', en: 'White' },
 ]
 
 export const penColors = ['#0f2d5e', '#2563a8', '#c9a84c', '#c0392b', '#2f7a3f', '#0d0d0d', '#ffffff']
