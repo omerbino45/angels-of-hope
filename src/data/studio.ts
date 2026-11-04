@@ -60,11 +60,18 @@ export const sizes = [
   { value: 1.2, he: 'גדול', en: 'Large' },
 ]
 
-const stickerFiles = import.meta.glob<string>('../assets/stickers/**/*.{svg,png}', { eager: true, query: '?url', import: 'default' })
+const stickerFiles = import.meta.glob<string>(['../assets/stickers/art/*.webp', '../assets/stickers/units/*.webp'], { eager: true, query: '?url', import: 'default' })
+const stickerThumbs = import.meta.glob<string>('../assets/stickers/thumb/**/*.webp', { eager: true, query: '?url', import: 'default' })
 
 export const stickerCategories = stickerData.map((category) => ({
   ...category,
-  stickers: category.stickers.map(({ file, ...rest }): StickerRef => ({ ...rest, src: stickerFiles[`../assets/stickers/${file}`] })),
+  stickers: category.stickers.map(
+    ({ file, ...rest }): StickerRef => ({
+      ...rest,
+      src: stickerFiles[`../assets/stickers/${file}`],
+      thumb: stickerThumbs[`../assets/stickers/thumb/${file}`],
+    }),
+  ),
 }))
 
 export const inkColors = [

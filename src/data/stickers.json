@@ -5,87 +5,87 @@
   "en": "Hearts & love",
   "stickers": [
    {
-    "file": "art/heart-gold-rim.png",
+    "file": "art/heart-gold-rim.webp",
     "he": "לב אדום במסגרת זהב",
     "en": "Red heart, gold rim"
    },
    {
-    "file": "art/heart-ribbon.png",
+    "file": "art/heart-ribbon.webp",
     "he": "לב עם סרט",
     "en": "Heart with ribbon"
    },
    {
-    "file": "art/heart-gem.png",
+    "file": "art/heart-gem.webp",
     "he": "לב יהלום",
     "en": "Jewel heart"
    },
    {
-    "file": "art/hearts-gem.png",
+    "file": "art/hearts-gem.webp",
     "he": "שני לבבות יהלום",
     "en": "Two jewel hearts"
    },
    {
-    "file": "art/hearts-3d.png",
+    "file": "art/hearts-3d.webp",
     "he": "לבבות תלת־ממד",
     "en": "3D hearts"
    },
    {
-    "file": "art/heart-pink-gem.png",
+    "file": "art/heart-pink-gem.webp",
     "he": "לב ורוד",
     "en": "Pink heart"
    },
    {
-    "file": "art/hearts-cluster.png",
+    "file": "art/hearts-cluster.webp",
     "he": "לב מלבבות",
     "en": "Heart of hearts"
    },
    {
-    "file": "art/heart-sparkle.png",
+    "file": "art/heart-sparkle.webp",
     "he": "לב נוצץ",
     "en": "Sparkling heart"
    },
    {
-    "file": "art/heart-hands.png",
+    "file": "art/heart-hands.webp",
     "he": "ידיים יוצרות לב",
     "en": "Heart hands"
    },
    {
-    "file": "art/rose-red.png",
+    "file": "art/rose-red.webp",
     "he": "ורד אדום",
     "en": "Red rose"
    },
    {
-    "file": "art/rose-vintage.png",
+    "file": "art/rose-vintage.webp",
     "he": "ורד עתיק",
     "en": "Vintage rose"
    },
    {
-    "file": "art/rose-stem.png",
+    "file": "art/rose-stem.webp",
     "he": "ורד עם גבעול",
     "en": "Long-stem rose"
    },
    {
-    "file": "art/rose-pale.png",
+    "file": "art/rose-pale.webp",
     "he": "ורד בהיר",
     "en": "Pale rose"
    },
    {
-    "file": "art/bouquet.png",
+    "file": "art/bouquet.webp",
     "he": "זר ורדים",
     "en": "Rose bouquet"
    },
    {
-    "file": "art/letter-seal.png",
+    "file": "art/letter-seal.webp",
     "he": "מעטפה חתומה",
     "en": "Sealed letter"
    },
    {
-    "file": "art/balloons-letter.png",
+    "file": "art/balloons-letter.webp",
     "he": "בלוני לב ומכתב",
     "en": "Heart balloons"
    },
    {
-    "file": "art/seal-heart.png",
+    "file": "art/seal-heart.webp",
     "he": "חותם לב",
     "en": "Heart seal"
    }
@@ -97,67 +97,67 @@
   "en": "Israel",
   "stickers": [
    {
-    "file": "art/flag-waving.png",
+    "file": "art/flag-waving.webp",
     "he": "דגל ישראל מתנופף",
     "en": "Waving Israeli flag"
    },
    {
-    "file": "art/flag-heart.png",
+    "file": "art/flag-heart.webp",
     "he": "לב בדגל ישראל",
     "en": "Israeli flag heart"
    },
    {
-    "file": "art/star-gold.png",
+    "file": "art/star-gold.webp",
     "he": "מגן דוד זהב",
     "en": "Gold Star of David"
    },
    {
-    "file": "art/star-blue.png",
+    "file": "art/star-blue.webp",
     "he": "מגן דוד כחול",
     "en": "Blue Star of David"
    },
    {
-    "file": "art/menorah-gold.png",
+    "file": "art/menorah-gold.webp",
     "he": "מנורת זהב",
     "en": "Gold menorah"
    },
    {
-    "file": "art/menorah-candles.png",
+    "file": "art/menorah-candles.webp",
     "he": "חנוכייה דולקת",
     "en": "Lit menorah"
    },
    {
-    "file": "art/western-wall.png",
+    "file": "art/western-wall.webp",
     "he": "הכותל המערבי",
     "en": "Western Wall"
    },
    {
-    "file": "art/dove-olive.png",
+    "file": "art/dove-olive.webp",
     "he": "יונה עם עלה זית",
     "en": "Dove with olive leaf"
    },
    {
-    "file": "art/dove-white.png",
+    "file": "art/dove-white.webp",
     "he": "יונה לבנה",
     "en": "White dove"
    },
    {
-    "file": "art/olive-branch.png",
+    "file": "art/olive-branch.webp",
     "he": "ענף זית",
     "en": "Olive branch"
    },
    {
-    "file": "art/olives-green.png",
+    "file": "art/olives-green.webp",
     "he": "זיתים ירוקים",
     "en": "Green olives"
    },
    {
-    "file": "art/olive-oil.png",
+    "file": "art/olive-oil.webp",
     "he": "שמן זית",
     "en": "Olive oil"
    },
    {
-    "file": "art/pomegranate.png",
+    "file": "art/pomegranate.webp",
     "he": "ענף רימון",
     "en": "Pomegranate branch"
    }
@@ -169,77 +169,77 @@
   "en": "Remembrance",
   "stickers": [
    {
-    "file": "art/ribbon-yellow.png",
+    "file": "art/ribbon-yellow.webp",
     "he": "סרט צהוב",
     "en": "Yellow ribbon"
    },
    {
-    "file": "art/candle-memorial.png",
+    "file": "art/candle-memorial.webp",
     "he": "נר נשמה",
     "en": "Memorial candle"
    },
    {
-    "file": "art/candle-glow.png",
+    "file": "art/candle-glow.webp",
     "he": "נר דולק",
     "en": "Glowing candle"
    },
    {
-    "file": "art/candle-drip.png",
+    "file": "art/candle-drip.webp",
     "he": "נר נוטף",
     "en": "Dripping candle"
    },
    {
-    "file": "art/poppy-red.png",
+    "file": "art/poppy-red.webp",
     "he": "פרג אדום",
     "en": "Red poppy"
    },
    {
-    "file": "art/poppy-bloom.png",
+    "file": "art/poppy-bloom.webp",
     "he": "פריחת פרג",
     "en": "Poppy bloom"
    },
    {
-    "file": "art/poppy-stem.png",
+    "file": "art/poppy-stem.webp",
     "he": "פרג עם גבעול",
     "en": "Poppy on stem"
    },
    {
-    "file": "art/poppy-orange.png",
+    "file": "art/poppy-orange.webp",
     "he": "פרג כתום",
     "en": "Orange poppy"
    },
    {
-    "file": "art/sunflower.png",
+    "file": "art/sunflower.webp",
     "he": "חמנייה",
     "en": "Sunflower"
    },
    {
-    "file": "art/water-lily.png",
+    "file": "art/water-lily.webp",
     "he": "שושן מים",
     "en": "Water lily"
    },
    {
-    "file": "art/butterfly.png",
+    "file": "art/butterfly.webp",
     "he": "פרפר",
     "en": "Monarch butterfly"
    },
    {
-    "file": "art/rainbow-clouds.png",
+    "file": "art/rainbow-clouds.webp",
     "he": "קשת בעננים",
     "en": "Rainbow in clouds"
    },
    {
-    "file": "art/rainbow-flowers.png",
+    "file": "art/rainbow-flowers.webp",
     "he": "קשת ופרחים",
     "en": "Rainbow and flowers"
    },
    {
-    "file": "art/wings-rose.png",
+    "file": "art/wings-rose.webp",
     "he": "כנפיים ורודות",
     "en": "Rose wings"
    },
    {
-    "file": "art/dove-3d.png",
+    "file": "art/dove-3d.webp",
     "he": "יונה תלת־ממד",
     "en": "3D dove"
    }
@@ -251,235 +251,235 @@
   "en": "Unit flags",
   "stickers": [
    {
-    "file": "units/flag-golani.png",
+    "file": "units/flag-golani.webp",
     "he": "גולני",
     "en": "Golani",
     "flag": true
    },
    {
-    "file": "units/flag-givati.png",
+    "file": "units/flag-givati.webp",
     "he": "גבעתי",
     "en": "Givati",
     "flag": true
    },
    {
-    "file": "units/flag-tzanhanim.png",
+    "file": "units/flag-tzanhanim.webp",
     "he": "צנחנים",
     "en": "Paratroopers",
     "flag": true
    },
    {
-    "file": "units/flag-nahal.png",
+    "file": "units/flag-nahal.webp",
     "he": "נח״ל",
     "en": "Nahal",
     "flag": true
    },
    {
-    "file": "units/flag-kfir.png",
+    "file": "units/flag-kfir.webp",
     "he": "כפיר",
     "en": "Kfir",
     "flag": true
    },
    {
-    "file": "units/flag-shiryon.png",
+    "file": "units/flag-shiryon.webp",
     "he": "חיל השריון",
     "en": "Armored Corps",
     "flag": true
    },
    {
-    "file": "units/flag-handasa.png",
+    "file": "units/flag-handasa.webp",
     "he": "הנדסה קרבית",
     "en": "Combat Engineers",
     "flag": true
    },
    {
-    "file": "units/flag-totchanim.png",
+    "file": "units/flag-totchanim.webp",
     "he": "חיל התותחנים",
     "en": "Artillery Corps",
     "flag": true
    },
    {
-    "file": "units/flag-yahalom.png",
+    "file": "units/flag-yahalom.webp",
     "he": "יהלום",
     "en": "Yahalom",
     "flag": true
    },
    {
-    "file": "units/flag-avir.png",
+    "file": "units/flag-avir.webp",
     "he": "חיל האוויר",
     "en": "Air Force",
     "flag": true
    },
    {
-    "file": "units/flag-yam.png",
+    "file": "units/flag-yam.webp",
     "he": "חיל הים",
     "en": "Navy",
     "flag": true
    },
    {
-    "file": "units/flag-modiin.png",
+    "file": "units/flag-modiin.webp",
     "he": "חיל המודיעין",
     "en": "Intelligence Corps",
     "flag": true
    },
    {
-    "file": "units/flag-isuf.png",
+    "file": "units/flag-isuf.webp",
     "he": "איסוף קרבי",
     "en": "Combat Intelligence",
     "flag": true
    },
    {
-    "file": "units/flag-refua.png",
+    "file": "units/flag-refua.webp",
     "he": "חיל הרפואה",
     "en": "Medical Corps",
     "flag": true
    },
    {
-    "file": "units/flag-regalim.png",
+    "file": "units/flag-regalim.webp",
     "he": "חיל הרגלים",
     "en": "Infantry Corps",
     "flag": true
    },
    {
-    "file": "units/flag-rabanut.png",
+    "file": "units/flag-rabanut.webp",
     "he": "הרבנות הצבאית",
     "en": "Military Rabbinate",
     "flag": true
    },
    {
-    "file": "units/flag-mishtara.png",
+    "file": "units/flag-mishtara.webp",
     "he": "משטרה צבאית",
     "en": "Military Police",
     "flag": true
    },
    {
-    "file": "units/flag-hinuch.png",
+    "file": "units/flag-hinuch.webp",
     "he": "חיל החינוך",
     "en": "Education Corps",
     "flag": true
    },
    {
-    "file": "units/flag-logistika.png",
+    "file": "units/flag-logistika.webp",
     "he": "לוגיסטיקה",
     "en": "Logistics Corps",
     "flag": true
    },
    {
-    "file": "units/flag-shalishut.png",
+    "file": "units/flag-shalishut.webp",
     "he": "השלישות",
     "en": "Adjutant Corps",
     "flag": true
    },
    {
-    "file": "units/flag-oref.png",
+    "file": "units/flag-oref.webp",
     "he": "פיקוד העורף",
     "en": "Home Front Command",
     "flag": true
    },
    {
-    "file": "units/flag-magav.png",
+    "file": "units/flag-magav.webp",
     "he": "משמר הגבול",
     "en": "Border Police",
     "flag": true
    },
    {
-    "file": "units/flag-klali.png",
+    "file": "units/flag-klali.webp",
     "he": "החיל הכללי",
     "en": "General Corps",
     "flag": true
    },
    {
-    "file": "units/flag-idf.png",
+    "file": "units/flag-idf.webp",
     "he": "צה״ל",
     "en": "IDF",
     "flag": true
    },
    {
-    "file": "units/flag-yabasha.png",
+    "file": "units/flag-yabasha.webp",
     "he": "זרוע היבשה",
     "en": "Ground Forces",
     "flag": true
    },
    {
-    "file": "units/flag-himush.png",
+    "file": "units/flag-himush.webp",
     "he": "חיל החימוש",
     "en": "Ordnance Corps",
     "flag": true
    },
    {
-    "file": "units/flag-tikshuv.png",
+    "file": "units/flag-tikshuv.webp",
     "he": "קשר ותקשוב",
     "en": "C4I Corps",
     "flag": true
    },
    {
-    "file": "units/flag-hagana.png",
+    "file": "units/flag-hagana.webp",
     "he": "הגנה אווירית",
     "en": "Air Defense",
     "flag": true
    },
    {
-    "file": "units/flag-gvulot.png",
+    "file": "units/flag-gvulot.webp",
     "he": "הגנת הגבולות",
     "en": "Border Defense",
     "flag": true
    },
    {
-    "file": "units/flag-refaim.png",
+    "file": "units/flag-refaim.webp",
     "he": "יחידה רב-ממדית",
     "en": "Multidimensional Unit",
     "flag": true
    },
    {
-    "file": "units/flag-matkal.png",
+    "file": "units/flag-matkal.webp",
     "he": "סיירת מטכ״ל",
     "en": "Sayeret Matkal",
     "flag": true
    },
    {
-    "file": "units/flag-tzafon.png",
+    "file": "units/flag-tzafon.webp",
     "he": "פיקוד הצפון",
     "en": "Northern Command",
     "flag": true
    },
    {
-    "file": "units/flag-merkaz.png",
+    "file": "units/flag-merkaz.webp",
     "he": "פיקוד המרכז",
     "en": "Central Command",
     "flag": true
    },
    {
-    "file": "units/flag-darom.png",
+    "file": "units/flag-darom.webp",
     "he": "פיקוד הדרום",
     "en": "Southern Command",
     "flag": true
    },
    {
-    "file": "units/flag-oref2.png",
+    "file": "units/flag-oref2.webp",
     "he": "פיקוד העומק",
     "en": "Depth Command",
     "flag": true
    },
    {
-    "file": "units/flag-aman.png",
+    "file": "units/flag-aman.webp",
     "he": "אגף המודיעין",
     "en": "Intelligence Directorate",
     "flag": true
    },
    {
-    "file": "units/flag-tal.png",
+    "file": "units/flag-tal.webp",
     "he": "אגף טכנולוגיה ולוגיסטיקה",
     "en": "Technology & Logistics",
     "flag": true
    },
    {
-    "file": "units/flag-aka.png",
+    "file": "units/flag-aka.webp",
     "he": "אגף כוח אדם",
     "en": "Manpower Directorate",
     "flag": true
    },
    {
-    "file": "units/flag-azuz.png",
+    "file": "units/flag-azuz.webp",
     "he": "גדוד עוז 198",
     "en": "198th Battalion",
     "flag": true
@@ -492,259 +492,259 @@
   "en": "Unit emblems",
   "stickers": [
    {
-    "file": "units/emblem-idf-badge.png",
+    "file": "units/emblem-idf-badge.webp",
     "he": "סמל צה״ל",
     "en": "IDF emblem",
     "emblem": true
    },
    {
-    "file": "units/emblem-golani-tree.png",
+    "file": "units/emblem-golani-tree.webp",
     "he": "גולני",
     "en": "Golani",
     "emblem": true
    },
    {
-    "file": "units/emblem-golani-tag.png",
+    "file": "units/emblem-golani-tag.webp",
     "he": "תג גולני",
     "en": "Golani tag",
     "emblem": true
    },
    {
-    "file": "units/emblem-givati-tag.png",
+    "file": "units/emblem-givati-tag.webp",
     "he": "גבעתי",
     "en": "Givati",
     "emblem": true
    },
    {
-    "file": "units/emblem-tzanhanim-tag.png",
+    "file": "units/emblem-tzanhanim-tag.webp",
     "he": "צנחנים",
     "en": "Paratroopers",
     "emblem": true
    },
    {
-    "file": "units/emblem-nahal-tag.png",
+    "file": "units/emblem-nahal-tag.webp",
     "he": "נח״ל",
     "en": "Nahal",
     "emblem": true
    },
    {
-    "file": "units/emblem-kfir-tag.png",
+    "file": "units/emblem-kfir-tag.webp",
     "he": "כפיר",
     "en": "Kfir",
     "emblem": true
    },
    {
-    "file": "units/emblem-hativa7.png",
+    "file": "units/emblem-hativa7.webp",
     "he": "חטיבה 7",
     "en": "7th Brigade",
     "emblem": true
    },
    {
-    "file": "units/emblem-hativa8.png",
+    "file": "units/emblem-hativa8.webp",
     "he": "חטיבה 8",
     "en": "8th Brigade",
     "emblem": true
    },
    {
-    "file": "units/emblem-barak.png",
+    "file": "units/emblem-barak.webp",
     "he": "חטיבת ברק",
     "en": "Barak Brigade",
     "emblem": true
    },
    {
-    "file": "units/emblem-hativa292.png",
+    "file": "units/emblem-hativa292.webp",
     "he": "חטיבה 292",
     "en": "292nd Brigade",
     "emblem": true
    },
    {
-    "file": "units/emblem-commando.png",
+    "file": "units/emblem-commando.webp",
     "he": "חטיבת קומנדו",
     "en": "Commando Brigade",
     "emblem": true
    },
    {
-    "file": "units/emblem-shaldag.png",
+    "file": "units/emblem-shaldag.webp",
     "he": "שלדג",
     "en": "Shaldag",
     "emblem": true
    },
    {
-    "file": "units/emblem-duvdevan.png",
+    "file": "units/emblem-duvdevan.webp",
     "he": "דובדבן",
     "en": "Duvdevan",
     "emblem": true
    },
    {
-    "file": "units/emblem-egoz.png",
+    "file": "units/emblem-egoz.webp",
     "he": "אגוז",
     "en": "Egoz",
     "emblem": true
    },
    {
-    "file": "units/emblem-maglan.png",
+    "file": "units/emblem-maglan.webp",
     "he": "מגלן",
     "en": "Maglan",
     "emblem": true
    },
    {
-    "file": "units/emblem-sayeret-nahal.png",
+    "file": "units/emblem-sayeret-nahal.webp",
     "he": "סיירת נח״ל",
     "en": "Nahal Recon",
     "emblem": true
    },
    {
-    "file": "units/emblem-sayeret-tzanhanim.png",
+    "file": "units/emblem-sayeret-tzanhanim.webp",
     "he": "סיירת צנחנים",
     "en": "Paratroopers Recon",
     "emblem": true
    },
    {
-    "file": "units/emblem-sayeret-givati.png",
+    "file": "units/emblem-sayeret-givati.webp",
     "he": "סיירת גבעתי",
     "en": "Givati Recon",
     "emblem": true
    },
    {
-    "file": "units/emblem-sayeret-golani.png",
+    "file": "units/emblem-sayeret-golani.webp",
     "he": "סיירת גולני",
     "en": "Golani Recon",
     "emblem": true
    },
    {
-    "file": "units/emblem-shayetet.png",
+    "file": "units/emblem-shayetet.webp",
     "he": "שייטת 13",
     "en": "Flotilla 13",
     "emblem": true
    },
    {
-    "file": "units/emblem-oketz.png",
+    "file": "units/emblem-oketz.webp",
     "he": "עוקץ",
     "en": "Oketz",
     "emblem": true
    },
    {
-    "file": "units/emblem-lotar.png",
+    "file": "units/emblem-lotar.webp",
     "he": "לוט״ר אילת",
     "en": "Lotar Eilat",
     "emblem": true
    },
    {
-    "file": "units/emblem-yahalom-pin.png",
+    "file": "units/emblem-yahalom-pin.webp",
     "he": "יהלום",
     "en": "Yahalom",
     "emblem": true
    },
    {
-    "file": "units/emblem-barak12.png",
+    "file": "units/emblem-barak12.webp",
     "he": "גדוד ברק",
     "en": "Barak Battalion",
     "emblem": true
    },
    {
-    "file": "units/emblem-bokim51.png",
+    "file": "units/emblem-bokim51.webp",
     "he": "גדוד 51",
     "en": "51st Battalion",
     "emblem": true
    },
    {
-    "file": "units/emblem-nahshon.png",
+    "file": "units/emblem-nahshon.webp",
     "he": "גדוד נחשון",
     "en": "Nahshon Battalion",
     "emblem": true
    },
    {
-    "file": "units/emblem-palhik.png",
+    "file": "units/emblem-palhik.webp",
     "he": "פלחי״ק צנחנים",
     "en": "Paratroopers Company",
     "emblem": true
    },
    {
-    "file": "units/emblem-avir-coat.png",
+    "file": "units/emblem-avir-coat.webp",
     "he": "חיל האוויר",
     "en": "Air Force",
     "emblem": true
    },
    {
-    "file": "units/emblem-yam-emblem.png",
+    "file": "units/emblem-yam-emblem.webp",
     "he": "חיל הים",
     "en": "Navy",
     "emblem": true
    },
    {
-    "file": "units/emblem-magav-emblem.png",
+    "file": "units/emblem-magav-emblem.webp",
     "he": "משמר הגבול",
     "en": "Border Police",
     "emblem": true
    },
    {
-    "file": "units/emblem-oref-tag.png",
+    "file": "units/emblem-oref-tag.webp",
     "he": "פיקוד העורף",
     "en": "Home Front Command",
     "emblem": true
    },
    {
-    "file": "units/emblem-mishtara-tag.png",
+    "file": "units/emblem-mishtara-tag.webp",
     "he": "משטרה צבאית",
     "en": "Military Police",
     "emblem": true
    },
    {
-    "file": "units/emblem-refua-badge.png",
+    "file": "units/emblem-refua-badge.webp",
     "he": "חיל הרפואה",
     "en": "Medical Corps",
     "emblem": true
    },
    {
-    "file": "units/emblem-totchanim-tag.png",
+    "file": "units/emblem-totchanim-tag.webp",
     "he": "חיל התותחנים",
     "en": "Artillery Corps",
     "emblem": true
    },
    {
-    "file": "units/emblem-handasa-badge.png",
+    "file": "units/emblem-handasa-badge.webp",
     "he": "חיל ההנדסה",
     "en": "Combat Engineers",
     "emblem": true
    },
    {
-    "file": "units/emblem-shiryon-badge.png",
+    "file": "units/emblem-shiryon-badge.webp",
     "he": "חיל השריון",
     "en": "Armored Corps",
     "emblem": true
    },
    {
-    "file": "units/emblem-regalim-tag.png",
+    "file": "units/emblem-regalim-tag.webp",
     "he": "חיל הרגלים",
     "en": "Infantry Corps",
     "emblem": true
    },
    {
-    "file": "units/emblem-logistika-tag.png",
+    "file": "units/emblem-logistika-tag.webp",
     "he": "לוגיסטיקה",
     "en": "Logistics Corps",
     "emblem": true
    },
    {
-    "file": "units/emblem-hinuch-badge.png",
+    "file": "units/emblem-hinuch-badge.webp",
     "he": "חיל החינוך",
     "en": "Education Corps",
     "emblem": true
    },
    {
-    "file": "units/emblem-rabanut-badge.png",
+    "file": "units/emblem-rabanut-badge.webp",
     "he": "הרבנות הצבאית",
     "en": "Military Rabbinate",
     "emblem": true
    },
    {
-    "file": "units/emblem-isuf-tag.png",
+    "file": "units/emblem-isuf-tag.webp",
     "he": "איסוף קרבי",
     "en": "Combat Intelligence",
     "emblem": true
    },
    {
-    "file": "units/emblem-modiin-badge.png",
+    "file": "units/emblem-modiin-badge.webp",
     "he": "חיל המודיעין",
     "en": "Intelligence Corps",
     "emblem": true
@@ -757,72 +757,72 @@
   "en": "People & hugs",
   "stickers": [
    {
-    "file": "art/hug-3d.png",
+    "file": "art/hug-3d.webp",
     "he": "חיבוק",
     "en": "Hug"
    },
    {
-    "file": "art/hug-family.png",
+    "file": "art/hug-family.webp",
     "he": "חיבוק משפחתי",
     "en": "Family hug"
    },
    {
-    "file": "art/hug-kids.png",
+    "file": "art/hug-kids.webp",
     "he": "ילדים מתחבקים",
     "en": "Children hugging"
    },
    {
-    "file": "art/family-big.png",
+    "file": "art/family-big.webp",
     "he": "משפחה גדולה",
     "en": "Big family"
    },
    {
-    "file": "art/family-home.png",
+    "file": "art/family-home.webp",
     "he": "משפחה יחד",
     "en": "Family together"
    },
    {
-    "file": "art/family-kids.png",
+    "file": "art/family-kids.webp",
     "he": "אם וילדים",
     "en": "Mother and children"
    },
    {
-    "file": "art/kids-circle.png",
+    "file": "art/kids-circle.webp",
     "he": "מעגל ילדים",
     "en": "Circle of children"
    },
    {
-    "file": "art/kids-hearts.png",
+    "file": "art/kids-hearts.webp",
     "he": "ילדים עם לבבות",
     "en": "Children with hearts"
    },
    {
-    "file": "art/elders.png",
+    "file": "art/elders.webp",
     "he": "סבא וסבתא",
     "en": "Grandparents"
    },
    {
-    "file": "art/community.png",
+    "file": "art/community.webp",
     "he": "קהילה",
     "en": "Community"
    },
    {
-    "file": "art/handshake-3d.png",
+    "file": "art/handshake-3d.webp",
     "he": "לחיצת יד",
     "en": "Handshake"
    },
    {
-    "file": "art/prayer-3d.png",
+    "file": "art/prayer-3d.webp",
     "he": "ידיים בתפילה",
     "en": "Prayer hands"
    },
    {
-    "file": "art/hands-open.png",
+    "file": "art/hands-open.webp",
     "he": "ידיים פתוחות",
     "en": "Open hands"
    },
    {
-    "file": "art/hands-palms.png",
+    "file": "art/hands-palms.webp",
     "he": "ידיים מושטות",
     "en": "Offered hands"
    }

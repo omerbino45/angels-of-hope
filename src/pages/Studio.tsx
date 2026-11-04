@@ -120,6 +120,14 @@ export function Studio() {
   const textRef = useRef<HTMLDivElement>(null)
   const paperColRef = useRef<HTMLDivElement>(null)
 
+  // Fetching every small sticker when the tab opens makes switching categories instant.
+  const thumbsLoaded = useRef(false)
+  useEffect(() => {
+    if (tab !== 'stickers' || thumbsLoaded.current) return
+    thumbsLoaded.current = true
+    stickerCategories.forEach((c) => c.stickers.forEach((s) => { if (s.thumb) new Image().src = s.thumb }))
+  }, [tab])
+
   const greeting = useMemo(() => greetingFor(family, lang === 'en'), [family, lang])
   const prompts = useMemo(() => writingPrompts(family?.fallen || null), [family])
 
@@ -464,7 +472,7 @@ export function Studio() {
                             aria-label={t(s.he, s.en)}
                             onClick={() => addSticker(s)}
                           >
-                            <StickerVisual sticker={s} />
+                            <StickerVisual sticker={s} small />
                             {(category === 'units' || category === 'emblems') && <span className="sticker-caption">{s.he}</span>}
                           </button>
                         ))}
