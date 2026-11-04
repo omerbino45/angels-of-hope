@@ -122,11 +122,10 @@ export const penColors = ['#0f2d5e', '#2563a8', '#c9a84c', '#c0392b', '#2f7a3f',
 export const penWidths = [3, 6, 12]
 
 export function writingPrompts(fallen: string | null) {
-  const name = fallen ?? 'הגיבורים'
-  const nameEn = fallen ?? 'the heroes'
+  const firstName = fallen?.split(' ')[0]
   return [
     { he: 'קוראים לי ___, ורציתי שתדעו ש...', en: 'My name is ___, and I wanted you to know that...' },
-    { he: `כששמעתי על ${name}, הדבר שהכי נגע בי היה...`, en: `When I heard about ${nameEn}, what touched me most was...` },
+    { he: `כששמעתי על ${firstName ?? 'הגיבורים'}, הדבר שהכי נגע בי היה...`, en: `When I heard about ${firstName ?? 'the heroes'}, what touched me most was...` },
     { he: 'אני חושב/ת עליכם בימים האלה, כי...', en: 'I think of you these days, because...' },
     { he: 'אני רוצה להגיד לכם תודה על...', en: 'I want to thank you for...' },
     { he: 'מה שאני לוקח/ת איתי מהסיפור הזה הוא...', en: 'What I take with me from this story is...' },
