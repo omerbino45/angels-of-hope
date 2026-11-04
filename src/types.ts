@@ -56,6 +56,8 @@ export interface LetterDesign {
   weight?: number
   size: number
   ink?: string
+  /** A soft panel behind the text, for backgrounds that make it hard to read. */
+  textPanel?: boolean
   /** Base text size as a fraction of paper width: larger on phones, where the paper is narrow. */
   baseRatio: number
   items: LetterItem[]
