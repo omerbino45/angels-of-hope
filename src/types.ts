@@ -36,7 +36,7 @@ interface ItemBase {
 }
 
 export type LetterItem =
-  | (ItemBase & { type: 'sticker'; sticker: StickerRef })
+  | (ItemBase & { type: 'sticker'; sticker: StickerRef; /** Degrees clockwise. */ rotation?: number })
   | (ItemBase & { type: 'image'; src: string; ratio: number })
   | (ItemBase & { type: 'song'; song: SongData })
 
@@ -52,6 +52,8 @@ export interface LetterDesign {
   themeId: string
   bgId: string
   fontId: string
+  /** The letter text's font weight; regular when unset. */
+  weight?: number
   size: number
   ink?: string
   /** Base text size as a fraction of paper width: larger on phones, where the paper is narrow. */

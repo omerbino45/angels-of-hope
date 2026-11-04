@@ -211,3 +211,15 @@ Backgrounds whose file name starts with `ph-` are CC0 photos found through [Open
 | David Libre | OFL | [Google Fonts](https://fonts.google.com/specimen/David+Libre) |
 | Varela Round | OFL | [Google Fonts](https://fonts.google.com/specimen/Varela+Round) |
 | Amatic SC | OFL | [Google Fonts](https://fonts.google.com/specimen/Amatic+SC) |
+| Assistant | OFL | [Google Fonts](https://fonts.google.com/specimen/Assistant) |
+| Rubik | OFL | [Google Fonts](https://fonts.google.com/specimen/Rubik) |
+| IBM Plex Sans Hebrew | OFL | [Google Fonts](https://fonts.google.com/specimen/IBM+Plex+Sans+Hebrew) |
+| Alef | OFL | [Google Fonts](https://fonts.google.com/specimen/Alef) |
+| Miriam Libre | OFL | [Google Fonts](https://fonts.google.com/specimen/Miriam+Libre) |
+| Fredoka | OFL | [Google Fonts](https://fonts.google.com/specimen/Fredoka) |
+| Secular One | OFL | [Google Fonts](https://fonts.google.com/specimen/Secular+One) |
+| Noto Serif Hebrew | OFL | [Google Fonts](https://fonts.google.com/specimen/Noto+Serif+Hebrew) |
+| Bellefair | OFL | [Google Fonts](https://fonts.google.com/specimen/Bellefair) |
+| Suez One | OFL | [Google Fonts](https://fonts.google.com/specimen/Suez+One) |
+| Playpen Sans Hebrew | OFL | [Google Fonts](https://fonts.google.com/specimen/Playpen+Sans+Hebrew) |
+| Karantina | OFL | [Google Fonts](https://fonts.google.com/specimen/Karantina) |
