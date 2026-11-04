@@ -417,6 +417,10 @@ export function Studio() {
                 ))}
               </select>
             </div>
+            <label className="toolbar-check">
+              <input type="checkbox" checked={Boolean(design.textPanel)} onChange={(e) => patch({ textPanel: e.target.checked })} />
+              {t('רקע מאחורי הטקסט', 'Backdrop behind the text')}
+            </label>
             <InkPicker value={design.ink} autoColor={autoInk(design.bgId, currentTheme.ink)} onChange={(ink) => patch({ ink })} />
           </div>
 

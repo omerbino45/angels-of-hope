@@ -1,10 +1,12 @@
-import { forwardRef, useEffect, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { forwardRef, Fragment, useEffect, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import { getBackgroundImage } from '../data/backgrounds'
 import { allThemes, fonts } from '../data/studio'
 import { useI18n } from '../i18n'
 import type { LetterDesign, LetterItem, StickerRef, Stroke } from '../types'
 
 const A4_RATIO = 141.4
+const DEFAULT_PAD_TOP = 9
+const DEFAULT_PAD_BOTTOM = 8
 
 interface Props {
   design: LetterDesign
@@ -122,6 +124,15 @@ function ItemContent({ item }: { item: LetterItem }) {
   )
 }
 
+/** How far down the lowest drawn line reaches, as a fraction of the paper's width. */
+function strokesBottom(strokes: Stroke[]) {
+  let lowest = 0
+  for (const stroke of strokes) {
+    for (const point of stroke.points.split(' ')) lowest = Math.max(lowest, Number(point.split(',')[1]))
+  }
+  return lowest / 1000
+}
+
 const itemCenter = (el: Element) => {
   const box = el.getBoundingClientRect()
   return { x: box.left + box.width / 2, y: box.top + box.height / 2 }
@@ -141,11 +152,14 @@ export const LetterPaper = forwardRef<HTMLDivElement, Props>(function LetterPape
   const { t, lang } = useI18n()
   const paperRef = useRef<HTMLDivElement>(null)
   const overlayRef = useRef<HTMLDivElement>(null)
+  const flowRef = useRef<HTMLDivElement>(null)
   const localTextRef = useRef<HTMLDivElement>(null)
   const editorRef = textRef ?? localTextRef
   const [selected, setSelected] = useState<string | null>(null)
-  const [minHeight, setMinHeight] = useState(A4_RATIO)
-  const [runsPastPage, setRunsPastPage] = useState(false)
+  const [pageCount, setPageCount] = useState(1)
+  // Where the text starts and ends on the sheet, in cqw.
+  const [textStart, setTextStart] = useState(0)
+  const [textBottom, setTextBottom] = useState(0)
   const [liveStroke, setLiveStroke] = useState<string | null>(null)
   const rotateDragged = useRef(false)
 
@@ -154,9 +168,12 @@ export const LetterPaper = forwardRef<HTMLDivElement, Props>(function LetterPape
   const bgImage = getBackgroundImage(design.bgId)
   const onDarkPaper = bgImage ? bgImage.tone === 'dark' : false
   const themeIsDark = theme.ink.startsWith('#f')
+  const panelIsDark = bgImage ? onDarkPaper : themeIsDark
   const ink = design.ink ?? autoInk(design.bgId, theme.ink)
   const accent = bgImage ? (onDarkPaper ? '#e6c86e' : themeIsDark ? '#2563a8' : theme.accent) : theme.accent
   // A frame's lines run where the sign-off normally sits, so it moves into the clear space beside them.
+  const padTop = bgImage?.pad?.t ?? DEFAULT_PAD_TOP
+  const padBottom = bgImage?.pad?.b ?? DEFAULT_PAD_BOTTOM
   const footPosition = bgImage?.pad?.foot !== undefined ? { bottom: `${bgImage.pad.foot}cqw` } : design.bgId === 'frame' ? { bottom: '4.2cqw' } : undefined
   const fontRatio = design.baseRatio * design.size * font.scale
 
@@ -186,44 +203,33 @@ export const LetterPaper = forwardRef<HTMLDivElement, Props>(function LetterPape
     return () => window.removeEventListener('pointerdown', onDown)
   }, [selected])
 
-  // An image background repeats past the first page, so a longer letter gets a panel to stay readable over it.
+  // Pages are added or dropped to fit whatever reaches lowest: the text, a sticker or a drawing.
   useLayoutEffect(() => {
     const paper = paperRef.current
     const editor = editorRef.current
-    if (!paper || !editor) return
+    const flow = flowRef.current
+    const overlay = overlayRef.current
+    if (!paper || !editor || !flow || !overlay) return
     const update = () => {
       const box = paper.getBoundingClientRect()
       if (!box.width) return
-      setRunsPastPage(((editor.getBoundingClientRect().bottom - box.top) / box.width) * 100 > A4_RATIO)
-    }
-    update()
-    const obs = new ResizeObserver(update)
-    obs.observe(editor)
-    obs.observe(paper)
-    return () => obs.disconnect()
-  }, [])
-
-  // A sticker placed low on the page, or a tall photo, extends the sheet instead of being clipped.
-  useLayoutEffect(() => {
-    const paper = paperRef.current
-    const overlay = overlayRef.current
-    if (!paper || !overlay) return
-    const update = () => {
-      const width = paper.getBoundingClientRect().width
-      if (!width) return
-      let bottom = A4_RATIO
+      const lastText = flow.lastElementChild!.getBoundingClientRect().bottom
+      let bottom = lastText - box.top
       overlay.querySelectorAll<HTMLElement>('.paper-item').forEach((el) => {
-        // Measured on screen, because a rotated sticker can reach lower than its unrotated box.
-        bottom = Math.max(bottom, ((el.getBoundingClientRect().bottom - paper.getBoundingClientRect().top) / width) * 100 + 2)
+        bottom = Math.max(bottom, el.getBoundingClientRect().bottom - box.top)
       })
-      setMinHeight(bottom)
+      const pageHeight = (box.width * A4_RATIO) / 100
+      setPageCount(Math.max(1, Math.ceil(bottom / pageHeight), Math.ceil(strokesBottom(design.strokes) * box.width / pageHeight)))
+      setTextStart(((editor.getBoundingClientRect().top - flow.getBoundingClientRect().top) / box.width) * 100)
+      setTextBottom(((lastText - box.top) / box.width) * 100)
     }
     update()
     const obs = new ResizeObserver(update)
     obs.observe(paper)
+    obs.observe(editor)
     overlay.querySelectorAll('.paper-item').forEach((el) => obs.observe(el))
     return () => obs.disconnect()
-  }, [design.items])
+  }, [design.items, design.strokes, pageCount])
 
   const moveItem = (id: string, patch: Partial<Pick<LetterItem, 'x' | 'y' | 'w'>> & { rotation?: number }) => {
     onItems?.(design.items.map((it) => (it.id === id ? ({ ...it, ...patch } as LetterItem) : it)))
@@ -365,55 +371,116 @@ export const LetterPaper = forwardRef<HTMLDivElement, Props>(function LetterPape
       <div
         ref={paperRef}
         className="paper"
-        style={{ background: theme.paper, color: ink, fontFamily: font.family }}
+        style={{ color: ink, fontFamily: font.family }}
       >
-        <div className="paper-inner" style={{ minHeight: `${minHeight}cqw` }}>
-          {bgImage ? (
-            <div className="bg-layer bg-photo" style={{ backgroundImage: `url("${bgImage.src}")` }} />
-          ) : (
-            <PaperBackground bgId={design.bgId} accent={theme.accent} flagColor={themeIsDark ? '#4a89c8' : '#1f4fa8'} />
-          )}
+        <div className="paper-inner" style={{ height: `${pageCount * A4_RATIO}cqw` }}>
+          {Array.from({ length: pageCount }, (_, page) => (
+            <div key={page} className={`paper-sheet ${bgImage ? `on-photo-${bgImage.tone}` : ''}`} style={{ background: theme.paper, top: `${page * A4_RATIO}cqw`, height: `${A4_RATIO}cqw` }}>
+              {bgImage ? (
+                <div className="bg-layer bg-photo" style={{ backgroundImage: `url("${bgImage.src}")` }} />
+              ) : (
+                <PaperBackground bgId={design.bgId} accent={theme.accent} flagColor={themeIsDark ? '#4a89c8' : '#1f4fa8'} />
+              )}
+              {design.textPanel && (() => {
+                const top = padTop + (page === 0 ? textStart : 0)
+                const end = Math.min(A4_RATIO - padBottom, textBottom - page * A4_RATIO)
+                if (end <= top) return null
+                return (
+                  <div
+                    className={`text-panel ${panelIsDark ? 'text-panel-dark' : ''}`}
+                    style={{
+                      fontSize: `${fontRatio * 100}cqw`,
+                      top: `${top}cqw`,
+                      height: `${end - top}cqw`,
+                      right: `calc(${bgImage?.pad?.r ?? 8}cqw - 1em)`,
+                      left: `calc(${bgImage?.pad?.l ?? 8}cqw - 1em)`,
+                    }}
+                  />
+                )
+              })()}
+              {design.bgId === 'lines' && (
+                <div
+                  className="paper-lined"
+                  style={{
+                    ['--line' as string]: `${theme.accent}55`,
+                    fontSize: `${fontRatio * 100}cqw`,
+                    top: `${padTop + (page === 0 ? textStart : 0)}cqw`,
+                    bottom: `${padBottom}cqw`,
+                  }}
+                />
+              )}
+              <p className={`paper-foot ${bgImage && bgImage.pad?.foot === undefined ? `paper-foot-on-${bgImage.tone}` : ''}`} style={{ color: accent, ...footPosition }}>
+                <span>
+                  מלאכים של תקווה
+                  {pageCount > 1 && <> · <bdi dir="ltr">{page + 1}/{pageCount}</bdi></>}
+                </span>
+              </p>
+            </div>
+          ))}
           <div
-            className={`paper-content ${bgImage ? `on-photo-${bgImage.tone}` : ''} ${bgImage && runsPastPage ? 'runs-past-page' : ''}`}
+            className="paper-content"
             style={{
               fontSize: `${fontRatio * 100}cqw`,
-              ...(bgImage?.pad?.t !== undefined && { paddingTop: `${bgImage.pad.t}cqw` }),
-              ...(bgImage?.pad?.b !== undefined && { paddingBottom: `${bgImage.pad.b}cqw` }),
+              paddingTop: `${padTop}cqw`,
+              paddingBottom: `${padBottom}cqw`,
               ...(bgImage?.pad?.r !== undefined && { paddingRight: `${bgImage.pad.r}cqw` }),
               ...(bgImage?.pad?.l !== undefined && { paddingLeft: `${bgImage.pad.l}cqw` }),
             }}
           >
-            <p className="paper-greeting" style={{ color: accent }}>{greeting}</p>
             <div
-              ref={editorRef}
-              className={`paper-text ${design.bgId === 'lines' ? 'paper-lined' : ''}`}
-              style={{ fontWeight: design.weight, ...(design.bgId === 'lines' && { ['--line' as string]: `${theme.accent}55` }) }}
-              dir={lang === 'he' ? 'rtl' : 'ltr'}
-              role={editable ? 'textbox' : undefined}
-              aria-multiline={editable ? true : undefined}
-              aria-label={editable ? t('תוכן המכתב', 'Letter text') : undefined}
-              data-placeholder={t('כתבו כאן את המכתב שלכם...', 'Write your letter here...')}
-              suppressContentEditableWarning
-              onInput={(e) => {
-                const el = e.currentTarget
-                // Browsers leave a stray newline behind when everything is deleted, which hides the placeholder.
-                if (el.innerText.trim() === '') el.textContent = ''
-                onText?.(el.innerText)
-              }}
-              onPaste={(e) => {
-                e.preventDefault()
-                document.execCommand('insertText', false, e.clipboardData.getData('text/plain'))
+              ref={flowRef}
+              className={`paper-flow ${bgImage ? `on-photo-${bgImage.tone}` : ''} ${design.textPanel ? 'has-text-panel' : ''}`}
+              onClick={(e) => {
+                // The empty part of a page belongs to the letter: clicking it continues the text.
+                if (!editable || drawing) return
+                const target = e.target as HTMLElement
+                if (target !== e.currentTarget && !target.classList.contains('page-break')) return
+                const el = editorRef.current!
+                el.focus()
+                const range = document.createRange()
+                range.selectNodeContents(el)
+                range.collapse(false)
+                const sel = window.getSelection()
+                sel?.removeAllRanges()
+                sel?.addRange(range)
               }}
             >
-              {editable ? null : text}
+              {/* Full-width floats sit across each page's bottom and top margins, so the one text box wraps past them onto the next page. */}
+              {Array.from({ length: pageCount }, (_, page) => (
+                <Fragment key={page}>
+                  <div className="page-break page-break-strut" style={{ height: `${A4_RATIO - padTop - padBottom}cqw` }} />
+                  <div className="page-break page-break-gap" style={{ height: `${padTop + padBottom}cqw` }} />
+                </Fragment>
+              ))}
+              <p className="paper-greeting" style={{ color: accent }}>{greeting}</p>
+              <div
+                ref={editorRef}
+                className="paper-text"
+                dir={lang === 'he' ? 'rtl' : 'ltr'}
+                role={editable ? 'textbox' : undefined}
+                aria-multiline={editable ? true : undefined}
+                aria-label={editable ? t('תוכן המכתב', 'Letter text') : undefined}
+                data-placeholder={t('כתבו כאן את המכתב שלכם...', 'Write your letter here...')}
+                style={{ fontWeight: design.weight }}
+                suppressContentEditableWarning
+                onInput={(e) => {
+                  const el = e.currentTarget
+                  // Browsers leave a stray newline behind when everything is deleted, which hides the placeholder.
+                  if (el.innerText.trim() === '') el.textContent = ''
+                  onText?.(el.innerText)
+                }}
+                onPaste={(e) => {
+                  e.preventDefault()
+                  document.execCommand('insertText', false, e.clipboardData.getData('text/plain'))
+                }}
+              >
+                {editable ? null : text}
+              </div>
+              {signature && <p className="paper-sign">{signature}</p>}
             </div>
-            {signature && <p className="paper-sign">{signature}</p>}
-            <p className={`paper-foot ${bgImage && bgImage.pad?.foot === undefined ? `paper-foot-on-${bgImage.tone}` : ''}`} style={{ color: accent, ...footPosition }}>
-              <span>מלאכים של תקווה</span>
-            </p>
           </div>
 
-          <svg className="stroke-layer" viewBox="0 0 1000 6000" aria-hidden="true">
+          <svg className="stroke-layer" viewBox={`0 0 1000 ${pageCount * A4_RATIO * 10}`} style={{ height: `${pageCount * A4_RATIO}cqw` }} aria-hidden="true">
             {design.strokes.map((s) => (
               <polyline key={s.id} points={s.points} fill="none" stroke={s.color} strokeWidth={s.width} strokeLinecap="round" strokeLinejoin="round" />
             ))}
