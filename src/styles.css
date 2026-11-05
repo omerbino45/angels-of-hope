@@ -303,6 +303,7 @@ footer strong{color:rgba(255,255,255,0.9);}
 .song-top{display:flex;gap:4cqw;justify-content:center;align-items:center;}
 .song-cover,.song-qr{width:44cqw;height:44cqw;object-fit:cover;border-radius:2cqw;display:block;pointer-events:none;}
 .song-cover:only-child,.song-qr:only-child{width:60cqw;height:60cqw;}
+.song-code{display:block;width:100%;height:auto;margin-top:3cqw;border-radius:2cqw;pointer-events:none;}
 .song-title{font-size:6cqw;font-weight:700;margin-top:3cqw;line-height:1.3;}
 .song-lines{font-size:5.5cqw;margin-top:2cqw;line-height:1.5;white-space:pre-wrap;color:var(--text-mid);word-break:break-word;}
 

@@ -11,7 +11,7 @@ import { backgroundCategories } from '../data/backgrounds'
 import { patterns, blankTheme, closestWeight, fontWeights, fonts, penColors, penWidths, sizes, stickerCategories, themes, writingPrompts } from '../data/studio'
 import { useI18n } from '../i18n'
 import { gregDateStr, hebrewDateStr, parseGregDate } from '../lib/dates'
-import { downloadPng, fetchSpotifyInfo, parseSpotifyUrl, readImage } from '../lib/export'
+import { downloadPng, fetchSpotifyCode, fetchSpotifyInfo, parseSpotifyUrl, readImage } from '../lib/export'
 import { useStore } from '../store'
 import type { Family, LetterDesign, LetterItem, StickerRef } from '../types'
 import candle from '../assets/stickers/icons/candle.svg'
@@ -225,15 +225,13 @@ export function Studio() {
       return
     }
     setSongBusy(true)
-    const [qr, info] = await Promise.all([
-      QRCode.toDataURL(url, { margin: 1, width: 320, color: { dark: '#0f2d5e', light: '#ffffff' } }),
-      fetchSpotifyInfo(url),
-    ])
+    const [code, info] = await Promise.all([fetchSpotifyCode(url), fetchSpotifyInfo(url)])
+    const qr = code ? undefined : await QRCode.toDataURL(url, { margin: 1, width: 320, color: { dark: '#0f2d5e', light: '#ffffff' } })
     setSongBusy(false)
     addItem({
       id: newId(),
       type: 'song',
-      song: { url, qr, title: info.title, cover: info.cover, lines: songLines.trim() },
+      song: { url, code, qr, title: info.title, cover: info.cover, lines: songLines.trim() },
       w: 0.42,
       x: 0.29,
       y: placementY(0.3),
