@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useBlocker, useNavigate, useParams } from 'react-router-dom'
 import QRCode from 'qrcode'
+import { CloseIcon } from '../components/CloseIcon'
 import { InkPicker } from '../components/InkPicker'
 import { autoInk, LetterPaper, PaperBackground, StickerVisual } from '../components/LetterPaper'
 import { Modal } from '../components/Modal'
@@ -164,6 +165,13 @@ export function Studio() {
     const opening = tab !== next
     setTab(opening ? next : null)
     setDrawing(opening && next === 'draw')
+  }
+
+  const closePanel = () => {
+    setTab(null)
+    setDrawing(false)
+    // A phone would open its keyboard over the page, so only larger screens go straight back to the text.
+    if (window.innerWidth >= 680) textRef.current?.focus({ preventScroll: true })
   }
 
   /** New items land in the part of the page currently on screen, not at the top of a long sheet. */
@@ -440,6 +448,10 @@ export function Studio() {
 
           <div className="dock no-print">
             {tab && (
+              <div className="dock-panel-wrap">
+              <button className="dock-close" aria-label={t('סגירת החלון', 'Close panel')} title={t('סגירה', 'Close')} onClick={closePanel}>
+                <CloseIcon />
+              </button>
               <div className="dock-panel">
                 {tab === 'backgrounds' && (
                   <>
@@ -556,6 +568,7 @@ export function Studio() {
                   </div>
                 )}
                 {tab === 'prompts' && promptList}
+              </div>
               </div>
             )}
             <div className="dock-bar">

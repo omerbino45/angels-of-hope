@@ -35,7 +35,7 @@ a{color:inherit;}
 .btn-large{font-size:17px;padding:15px 36px;}
 .btn-small{min-height:40px;padding:8px 18px;font-size:13px;}
 .btn-link-danger{background:none;border:none;color:var(--danger);font-size:13px;cursor:pointer;padding:10px;min-height:40px;}
-.icon-btn{width:40px;height:40px;background:none;border:none;border-radius:50%;font-size:18px;color:var(--text-muted);cursor:pointer;flex-shrink:0;}
+.icon-btn{display:flex;align-items:center;justify-content:center;width:40px;height:40px;background:none;border:none;border-radius:50%;font-size:18px;color:var(--text-muted);cursor:pointer;flex-shrink:0;}
 .icon-btn:hover{background:var(--cream);}
 .cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px;}
 .cta-center{justify-content:center;}
@@ -107,7 +107,7 @@ section{padding:76px 24px;}
 .gallery-btn:hover .gallery-img{transform:scale(1.03);box-shadow:0 8px 28px rgba(15,45,94,0.18);}
 .lightbox{display:flex;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:999;align-items:center;justify-content:center;padding:20px;}
 .lightbox img{max-width:90vw;max-height:88vh;border-radius:10px;object-fit:contain;}
-.lightbox-close{position:absolute;top:18px;left:18px;width:44px;height:44px;background:rgba(255,255,255,0.15);border:none;border-radius:50%;color:#fff;font-size:18px;cursor:pointer;}
+.lightbox-close{display:flex;align-items:center;justify-content:center;position:absolute;top:18px;left:18px;width:44px;height:44px;background:rgba(255,255,255,0.15);border:none;border-radius:50%;color:#fff;font-size:18px;cursor:pointer;}
 .lightbox-close:hover{background:rgba(255,255,255,0.25);}
 .partners{background:var(--cream-dark);padding:70px 24px;}
 .partners-text{margin:0 auto 40px;}
@@ -308,9 +308,15 @@ footer strong{color:rgba(255,255,255,0.9);}
 
 /* Dock */
 .dock{position:sticky;bottom:10px;z-index:20;background:var(--white);border:1px solid rgba(37,99,168,0.14);border-radius:14px;box-shadow:0 -4px 24px rgba(15,45,94,0.12);}
-/* Netlify's badge is fixed to the bottom corner on free plans. Keep the dock clear of it for as long as it is on. */
-body:has(#nl-badge-frame) .dock{bottom:72px;}
 .dock-panel{padding:14px;border-bottom:1px solid rgba(37,99,168,0.12);max-height:min(44vh,360px);overflow-y:auto;}
+.dock-panel-wrap{position:relative;}
+.dock-close{position:absolute;top:16px;right:10px;z-index:2;width:34px;height:34px;padding:0;border-radius:50%;background:var(--white);border:1px solid rgba(37,99,168,0.25);color:var(--text-dark);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;}
+.dock-close:hover{background:var(--cream);}
+/* The panel's first row stops short of the close button. */
+.dock-panel > :first-child{margin-right:40px;}
+/* Categories stay in view while the options under them scroll. */
+.dock-panel:has(> .chip-row){padding-top:0;}
+.dock-panel > .chip-row{position:sticky;top:0;z-index:1;margin:0 -14px;padding:14px 54px 10px 14px;background:var(--white);}
 .dock-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;padding:8px 10px;}
 .dock-tabs{display:flex;gap:4px;flex-wrap:wrap;}
 .dock-tab{background:none;border:none;border-radius:9px;min-height:42px;padding:8px 14px;font-size:14px;font-weight:500;color:var(--text-mid);cursor:pointer;transition:background .15s;}
@@ -448,7 +454,9 @@ body:has(#nl-badge-frame) .dock{bottom:72px;}
   .dock-bar{padding:6px;gap:6px;}
   .dock-tabs{width:100%;flex-wrap:nowrap;justify-content:space-between;}
   .dock-panel{max-height:40vh;padding:10px;}
-  .dock-panel .chip-row{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -10px;padding:0 10px 4px;}
+  .dock-close{top:12px;}
+  .dock-panel:has(> .chip-row){padding-top:0;}
+  .dock-panel > .chip-row{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -10px;padding:10px 50px 8px 10px;}
   .dock-panel .chip{flex-shrink:0;white-space:nowrap;}
   .dock-tab{flex:1 1 auto;padding:6px 4px;font-size:13px;min-height:38px;}
   .dock-actions{width:100%;}
