@@ -3,6 +3,7 @@ import { getBackgroundImage } from '../data/backgrounds'
 import { allThemes, fonts } from '../data/studio'
 import { useI18n } from '../i18n'
 import type { LetterDesign, LetterItem, StickerRef, Stroke } from '../types'
+import { CloseIcon } from './CloseIcon'
 
 const A4_RATIO = 141.4
 const DEFAULT_PAD_TOP = 9
@@ -508,12 +509,12 @@ export const LetterPaper = forwardRef<HTMLDivElement, Props>(function LetterPape
                     <button
                       className="item-delete no-export no-print"
                       aria-label={t('מחיקת פריט', 'Remove item')}
-                      // Keeps the ✕ reading as an ✕ on a rotated sticker.
+                      // Keeps the X reading as an X on a rotated sticker.
                       style={item.type === 'sticker' && item.rotation ? { transform: `rotate(${-item.rotation}deg)` } : undefined}
                       onPointerDown={(e) => e.stopPropagation()}
                       onClick={() => onItems?.(design.items.filter((x) => x.id !== item.id))}
                     >
-                      ✕
+                      <CloseIcon size={12} />
                     </button>
                     <span className="item-resize no-export no-print" onPointerDown={(e) => startResize(e, item)} aria-hidden="true" />
                     {item.type === 'sticker' && (

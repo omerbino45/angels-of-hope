@@ -20,6 +20,7 @@ import p1 from '../assets/partner-1.jpeg'
 import p2 from '../assets/partner-2.jpeg'
 import p3 from '../assets/partner-3.png'
 import p4 from '../assets/partner-4.jpeg'
+import { CloseIcon } from '../components/CloseIcon'
 
 const gallery = [
   [g1, 'מתנות'],
@@ -296,7 +297,7 @@ export function Home() {
       {lightbox && (
         <div className="lightbox" onClick={() => setLightbox(null)}>
           <button className="lightbox-close" onClick={() => setLightbox(null)} aria-label={t('סגירה', 'Close')}>
-            ✕
+            <CloseIcon />
           </button>
           <img src={lightbox} alt="" />
         </div>
