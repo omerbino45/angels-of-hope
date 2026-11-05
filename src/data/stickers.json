@@ -742,6 +742,24 @@
     "he": "שב״כ",
     "en": "Shin Bet",
     "emblem": true
+   },
+   {
+    "file": "units/emblem-504.webp",
+    "he": "יחידה 504",
+    "en": "Unit 504",
+    "emblem": true
+   },
+   {
+    "file": "units/emblem-aman.webp",
+    "he": "אגף המודיעין",
+    "en": "Intelligence Directorate",
+    "emblem": true
+   },
+   {
+    "file": "units/emblem-refaim.webp",
+    "he": "יחידה רב-ממדית",
+    "en": "Multidimensional Unit",
+    "emblem": true
    }
   ]
  },
