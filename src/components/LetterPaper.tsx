@@ -117,10 +117,11 @@ function ItemContent({ item }: { item: LetterItem }) {
     <div className="song-block">
       <div className="song-top">
         {song.cover && <img className="song-cover" src={song.cover} alt="" draggable={false} />}
-        <img className="song-qr" src={song.qr} alt="QR" draggable={false} />
+        {song.qr && <img className="song-qr" src={song.qr} alt="QR" draggable={false} />}
       </div>
       {song.title && <div className="song-title">{song.title}</div>}
       {song.lines && <div className="song-lines">{song.lines}</div>}
+      {song.code && <img className="song-code" src={song.code} alt="Spotify Code" draggable={false} />}
     </div>
   )
 }

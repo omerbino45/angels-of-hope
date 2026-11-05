@@ -21,7 +21,9 @@ export interface StickerRef {
 
 export interface SongData {
   url: string
-  qr: string
+  /** A Spotify Code, or a QR when Spotify couldn't provide one. */
+  code?: string
+  qr?: string
   title?: string
   cover?: string
   lines: string

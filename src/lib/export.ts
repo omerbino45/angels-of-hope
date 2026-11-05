@@ -42,8 +42,9 @@ export function parseSpotifyUrl(input: string): string | null {
   return m ? `https://open.spotify.com/${m[1]}/${m[2]}` : null
 }
 
-async function toDataUrl(url: string): Promise<string> {
-  const res = await fetch(url)
+async function toDataUrl(url: string, signal?: AbortSignal): Promise<string> {
+  const res = await fetch(url, { signal })
+  if (!res.ok) throw new Error(`Request failed: ${res.status}`)
   const blob = await res.blob()
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
@@ -51,6 +52,19 @@ async function toDataUrl(url: string): Promise<string> {
     reader.onerror = () => reject(reader.error)
     reader.readAsDataURL(blob)
   })
+}
+
+/**
+ * The code is kept inside the letter, so it still prints if Spotify later can't be reached.
+ * Spotify doesn't document this address, so callers need a fallback for when it stops working.
+ */
+export async function fetchSpotifyCode(url: string): Promise<string | undefined> {
+  const [type, id] = new URL(url).pathname.split('/').slice(1)
+  try {
+    return await toDataUrl(`https://scannables.scdn.co/uri/plain/svg/000000/white/640/spotify:${type}:${id}`, AbortSignal.timeout(6000))
+  } catch {
+    return undefined
+  }
 }
 
 /** Title and cover are a bonus: when Spotify can't be reached the block still works with just the QR. */
