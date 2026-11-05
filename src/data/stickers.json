@@ -453,6 +453,18 @@
     "he": "גדוד עוז 198",
     "en": "198th Battalion",
     "flag": true
+   },
+   {
+    "file": "units/flag-mossad.webp",
+    "he": "המוסד",
+    "en": "Mossad",
+    "flag": true
+   },
+   {
+    "file": "units/flag-shabak.webp",
+    "he": "שב״כ",
+    "en": "Shin Bet",
+    "flag": true
    }
   ]
  },
@@ -717,6 +729,18 @@
     "file": "units/emblem-modiin-badge.webp",
     "he": "חיל המודיעין",
     "en": "Intelligence Corps",
+    "emblem": true
+   },
+   {
+    "file": "units/emblem-mossad.webp",
+    "he": "המוסד",
+    "en": "Mossad",
+    "emblem": true
+   },
+   {
+    "file": "units/emblem-shabak.webp",
+    "he": "שב״כ",
+    "en": "Shin Bet",
     "emblem": true
    }
   ]

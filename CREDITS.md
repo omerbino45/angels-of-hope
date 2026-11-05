@@ -90,6 +90,9 @@ Unit insignia may also be subject to IDF rules on their use, separately from the
 | [סיכת דובדבן.png](https://commons.wikimedia.org/wiki/File:%D7%A1%D7%99%D7%9B%D7%AA_%D7%93%D7%95%D7%91%D7%93%D7%91%D7%9F.png) | CC BY-SA 3.0 | IDF Spokesperson's Unit |
 | [סמל גדוד נחשון 90.svg](https://commons.wikimedia.org/wiki/File:%D7%A1%D7%9E%D7%9C_%D7%92%D7%93%D7%95%D7%93_%D7%A0%D7%97%D7%A9%D7%95%D7%9F_90.svg) | CC BY-SA 4.0 | Drordroriy |
 | [סמל כוחות האש - חיל התותחנים.svg](https://commons.wikimedia.org/wiki/File:%D7%A1%D7%9E%D7%9C_%D7%9B%D7%95%D7%97%D7%95%D7%AA_%D7%94%D7%90%D7%A9_-_%D7%97%D7%99%D7%9C_%D7%94%D7%AA%D7%95%D7%AA%D7%97%D7%A0%D7%99%D7%9D.svg) | CC BY-SA 3.0 | IDF Spokesperson's Unit |
+| Mossad and Shin Bet flags and emblems | Not an open license | Logo files supplied for this site |
+
+The Mossad and Shin Bet (Israel Security Agency) flags and emblems were built from logo files supplied for this site, not from Wikimedia Commons. These are the organizations' own emblems, and their use may be subject to those organizations' rules.
 
 ## Stickers
 
