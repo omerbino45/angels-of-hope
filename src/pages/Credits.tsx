@@ -23,8 +23,8 @@ const sectionText: Record<string, { he: string; en: string; noteHe: string; note
   'Unit flags and emblems': {
     he: 'דגלים וסמלי יחידות',
     en: 'Unit flags and emblems',
-    noteHe: 'מתוך ויקישיתוף. הקבצים שונו: הוקטנו, הרקע הוסר, נוסף קו מתאר לבן, ועל חלק מהדגלים הונח סמל היחידה. הסמלים עצמם עשויים להיות כפופים גם לכללי צה"ל.',
-    noteEn: "From Wikimedia Commons. The files were changed: resized, background removed, white outline added, and on some flags the unit's emblem was placed. The insignia may also be subject to IDF rules.",
+    noteHe: 'מתוך ויקישיתוף. הקבצים שונו: הוקטנו, הרקע הוסר, נוסף קו מתאר לבן, ועל חלק מהדגלים הונח סמל היחידה. הסמלים עצמם עשויים להיות כפופים גם לכללי צה"ל. סמלי המוסד והשב"כ נבנו מקובצי לוגו שסופקו לאתר, והשימוש בהם עשוי להיות כפוף לכללי הארגונים.',
+    noteEn: "From Wikimedia Commons. The files were changed: resized, background removed, white outline added, and on some flags the unit's emblem was placed. The insignia may also be subject to IDF rules. The Mossad and Shin Bet emblems were built from logo files supplied for this site, and their use may be subject to those organizations' rules.",
   },
   Stickers: {
     he: 'סטיקרים',
