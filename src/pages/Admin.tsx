@@ -2,13 +2,13 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import QRCode from 'qrcode'
 import { LetterPaper } from '../components/LetterPaper'
 import { Modal } from '../components/Modal'
-import { GENERAL_ID, sampleFamily } from '../data/families'
+import { emptyFallen, fallenLabel, familySearchText, GENERAL_ID, sampleFamily } from '../data/families'
 import { useI18n } from '../i18n'
 import { downloadPng, readImage } from '../lib/export'
 import { useStore } from '../store'
-import type { Family, Letter, LetterStatus } from '../types'
+import type { Fallen, Family, Letter, LetterStatus } from '../types'
 
-const generalFamily: Family = { id: GENERAL_ID, name: 'מכתבים כלליים', fallen: '', city: '', date: '', acceptsLetters: false }
+const generalFamily: Family = { id: GENERAL_ID, name: 'מכתבים כלליים', fallen: [], acceptsLetters: false }
 
 function LetterViewer({ letter, onClose }: { letter: Letter; onClose: () => void }) {
   const { t } = useI18n()
@@ -53,7 +53,7 @@ function ShareModal({ family, onClose }: { family: Family; onClose: () => void }
 
   const message = `כתבו מכתב למשפחה: ${url}`
   return (
-    <Modal title={t(`קישור לכיתה: ${family.fallen || family.name}`, `Class link: ${family.fallen || family.name}`)} onClose={onClose}>
+    <Modal title={t(`קישור לכיתה: ${fallenLabel(family) || family.name}`, `Class link: ${fallenLabel(family) || family.name}`)} onClose={onClose}>
       <div className="share-box">
         <p className="modal-text">
           {t('הקרינו את הקוד בהרצאה או שלחו את הקישור לקבוצה. כל מי שסורק מגיע ישר לדף הכתיבה של המשפחה הזו.', "Show this code during a talk or send the link to a group. Whoever scans it lands straight on this family's writing page.")}
@@ -91,7 +91,7 @@ function LettersTab({ onView, onPrintAll }: { onView: (letter: Letter) => void; 
     return [sampleFamily, ...(hasGeneral ? [generalFamily] : []), ...families]
   }, [families, letters])
 
-  const visible = cards.filter((f) => `${f.fallen} ${f.name} ${f.city}`.includes(query.trim()))
+  const visible = cards.filter((f) => familySearchText(f).includes(query.trim()))
   const openLetters = open ? letters.filter((l) => l.familyId === open.id) : []
 
   const real = letters.filter((l) => !l.sample)
@@ -124,7 +124,7 @@ function LettersTab({ onView, onPrintAll }: { onView: (letter: Letter) => void; 
           const fresh = familyLetters.filter((l) => l.status === 'new').length
           return (
             <button className={`family-tile admin-tile ${f.id === sampleFamily.id ? 'is-sample' : ''}`} key={f.id} onClick={() => setOpen(f)}>
-              <span className="tile-name">{f.fallen || f.name || t('משפחה חדשה', 'New family')}</span>
+              <span className="tile-name">{fallenLabel(f) || f.name || t('משפחה חדשה', 'New family')}</span>
               <span className="tile-family">{f.name}</span>
               <span className="tile-count">
                 {t(count === 1 ? 'מכתב אחד' : `${count} מכתבים`, count === 1 ? '1 letter' : `${count} letters`)}
@@ -249,29 +249,59 @@ function FamiliesTab() {
         {families.map((f) => (
           <div className="family-row" key={f.id}>
             <input className="form-input" aria-label={t('שם משפחה', 'Family name')} placeholder={t('שם משפחה', 'Family name')} value={f.name} onChange={(e) => updateFamily(f.id, { name: e.target.value })} />
-            <input className="form-input" aria-label={t('שם הנופל/ת', 'Name of the fallen')} placeholder={t('שם הנופל/ת', 'Name of the fallen')} value={f.fallen} onChange={(e) => updateFamily(f.id, { fallen: e.target.value })} />
-            <input className="form-input" aria-label={t('יישוב', 'Town')} placeholder={t('יישוב', 'Town')} value={f.city} onChange={(e) => updateFamily(f.id, { city: e.target.value })} />
-            <input className="form-input" aria-label={t('תאריך', 'Date')} placeholder="D.M.YYYY" dir="ltr" value={f.date} onChange={(e) => updateFamily(f.id, { date: e.target.value })} />
-            <textarea className="form-input family-bio" aria-label={t('סיפור קצר, באישור המשפחה', "Short story, with the family's approval")} placeholder={t('סיפור קצר, באישור המשפחה', "Short story, with the family's approval")} rows={2} value={f.bio ?? ''} onChange={(e) => updateFamily(f.id, { bio: e.target.value })} />
+            {f.fallen.map((p, i) => {
+              const setPerson = (patch: Partial<Fallen>) => updateFamily(f.id, { fallen: f.fallen.map((x, j) => (j === i ? { ...x, ...patch } : x)) })
+              const izkorLooksWrong = Boolean(p.izkor) && !/^https:\/\/(www\.)?izkor\.gov\.il\//.test(p.izkor ?? '')
+              return (
+                <div className="fallen-row" key={i}>
+                  <input className="form-input" aria-label={t('שם הנופל/ת', 'Name of the fallen')} placeholder={t('שם הנופל/ת', 'Name of the fallen')} value={p.name} onChange={(e) => setPerson({ name: e.target.value })} />
+                  <input className="form-input" aria-label={t('יישוב', 'Town')} placeholder={t('יישוב', 'Town')} value={p.city} onChange={(e) => setPerson({ city: e.target.value })} />
+                  <input className="form-input" aria-label={t('תאריך', 'Date')} placeholder="D.M.YYYY" dir="ltr" value={p.date} onChange={(e) => setPerson({ date: e.target.value })} />
+                  <div className="fallen-row-wide">
+                    <input
+                      className="form-input"
+                      type="url"
+                      dir="ltr"
+                      aria-label={t('קישור לדף באתר יזכור', 'Link to the Izkor page')}
+                      placeholder={t('קישור לדף באתר יזכור', 'Link to the Izkor page')}
+                      value={p.izkor ?? ''}
+                      onChange={(e) => setPerson({ izkor: e.target.value.trim() || undefined })}
+                    />
+                    {izkorLooksWrong && <p className="form-hint form-hint-warn">{t('הקישור צריך להתחיל ב-https://www.izkor.gov.il/', 'The link should start with https://www.izkor.gov.il/')}</p>}
+                  </div>
+                  <textarea className="form-input fallen-row-wide" aria-label={t('סיפור קצר, באישור המשפחה', "Short story, with the family's approval")} placeholder={t('סיפור קצר, באישור המשפחה', "Short story, with the family's approval")} rows={2} value={p.bio ?? ''} onChange={(e) => setPerson({ bio: e.target.value })} />
+                  <div className="fallen-row-wide family-row-actions">
+                    <label className="btn btn-secondary btn-small file-btn">
+                      {p.photo ? t('החלפת תמונה', 'Replace photo') : t('הוספת תמונה', 'Add photo')}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0]
+                          e.target.value = ''
+                          if (!file) return
+                          try {
+                            const { src } = await readImage(file, 600)
+                            setPerson({ photo: src })
+                          } catch {
+                            // An unreadable file leaves the current photo in place.
+                          }
+                        }}
+                      />
+                    </label>
+                    {f.fallen.length > 1 && (
+                      <button className="btn-link-danger" onClick={() => updateFamily(f.id, { fallen: f.fallen.filter((_, j) => j !== i) })}>
+                        {t('הסרת השם הזה', 'Remove this name')}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
             <div className="family-row-actions">
-              <label className="btn btn-secondary btn-small file-btn">
-                {f.photo ? t('החלפת תמונה', 'Replace photo') : t('הוספת תמונה', 'Add photo')}
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0]
-                    e.target.value = ''
-                    if (!file) return
-                    try {
-                      const { src } = await readImage(file, 600)
-                      updateFamily(f.id, { photo: src })
-                    } catch {
-                      // An unreadable file leaves the current photo in place.
-                    }
-                  }}
-                />
-              </label>
+              <button className="btn btn-secondary btn-small" onClick={() => updateFamily(f.id, { fallen: [...f.fallen, emptyFallen()] })}>
+                + {t('הוספת חלל/ה נוסף/ת במשפחה', 'Add another fallen in this family')}
+              </button>
               <label className="check-row">
                 <input type="checkbox" checked={f.acceptsLetters} onChange={(e) => updateFamily(f.id, { acceptsLetters: e.target.checked })} />
                 <span>{t('שמחה לקבל מכתבים', 'Happy to receive letters')}</span>

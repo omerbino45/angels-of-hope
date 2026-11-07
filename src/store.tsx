@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react'
-import { initialFamilies } from './data/families'
+import { emptyFallen, initialFamilies } from './data/families'
 import type { Family, Letter } from './types'
 
 const sampleDesign = (themeId: string, bgId: string, fontId: string): Letter['design'] => ({
@@ -74,7 +74,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const addFamily = useCallback(
     () =>
       setFamilies((f) => [
-        { id: `new-${Date.now()}`, name: '', fallen: '', city: '', date: '', acceptsLetters: true },
+        { id: `new-${Date.now()}`, name: '', fallen: [emptyFallen()], acceptsLetters: true },
         ...f,
       ]),
     [],

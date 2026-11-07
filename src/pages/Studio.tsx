@@ -5,7 +5,7 @@ import { CloseIcon } from '../components/CloseIcon'
 import { InkPicker } from '../components/InkPicker'
 import { autoInk, LetterPaper, PaperBackground, StickerVisual } from '../components/LetterPaper'
 import { Modal } from '../components/Modal'
-import { GENERAL_ID } from '../data/families'
+import { calledNames, GENERAL_ID, mergedFamilyIds } from '../data/families'
 import { getBackgroundImage } from '../data/backgrounds'
 import { backgroundCategories } from '../data/backgrounds'
 import { patterns, blankTheme, closestWeight, fontWeights, fonts, penColors, penWidths, sizes, stickerCategories, themes, writingPrompts } from '../data/studio'
@@ -13,7 +13,7 @@ import { useI18n } from '../i18n'
 import { gregDateStr, hebrewDateStr, parseGregDate } from '../lib/dates'
 import { downloadPng, fetchSpotifyCode, fetchSpotifyInfo, parseSpotifyUrl, readImage } from '../lib/export'
 import { useStore } from '../store'
-import type { Family, LetterDesign, LetterItem, StickerRef } from '../types'
+import type { Fallen, Family, LetterDesign, LetterItem, StickerRef } from '../types'
 import candle from '../assets/stickers/icons/candle.svg'
 import heart from '../assets/stickers/icons/heart-blue.svg'
 
@@ -27,9 +27,43 @@ function greetingFor(family: Family | null, en: boolean) {
   return en ? `Dear ${family.name},` : `למשפחת ${name} היקרה,`
 }
 
-function FallenPanel({ family }: { family: Family | null }) {
+function FallenCard({ person, familyName }: { person: Fallen; familyName: string }) {
   const { t } = useI18n()
   const [more, setMore] = useState(false)
+  const d = parseGregDate(person.date)
+  return (
+    <div className="fallen-card">
+      <div className="fallen-photo">
+        {person.photo ? <img src={person.photo} alt={person.name} /> : <img className="fallen-candle" src={candle} alt="" />}
+      </div>
+      <p className="fallen-label">{t('לזכר', 'In memory of')}</p>
+      <h2 className="fallen-name">{person.name || familyName}</h2>
+      <p className="fallen-family">{familyName}</p>
+      <button className="fallen-toggle" aria-expanded={more} onClick={() => setMore((v) => !v)}>
+        {more ? t('הסתרת הפרטים', 'Hide details') : t('פרטים נוספים', 'More details')}
+      </button>
+      <div className={`fallen-more ${more ? 'is-open' : ''}`}>
+        {person.city && <p className="fallen-meta">{person.city}</p>}
+        {d && (
+          <p className="fallen-meta">
+            נפל ביום {hebrewDateStr(d)}
+            <br />
+            {gregDateStr(d)}
+          </p>
+        )}
+        <p className="fallen-bio">
+          {person.bio || t('הסיפור המלא והתמונה יתווספו כאן באישור המשפחה.', "The full story and photo will be added here with the family's approval.")}
+        </p>
+        <a className="fallen-link" href={person.izkor || 'https://www.izkor.gov.il/'} target="_blank" rel="noreferrer">
+          {person.izkor ? t('לדף ההנצחה ביזכור', 'Memorial page on Izkor') : t('לאתר יזכור', 'Visit Izkor')} ↗
+        </a>
+      </div>
+    </div>
+  )
+}
+
+function FallenPanel({ family }: { family: Family | null }) {
+  const { t } = useI18n()
   if (!family) {
     return (
       <div className="fallen-card">
@@ -40,46 +74,19 @@ function FallenPanel({ family }: { family: Family | null }) {
       </div>
     )
   }
-  const d = parseGregDate(family.date)
   return (
-    <div className="fallen-card">
-      <div className="fallen-photo">
-        {family.photo ? (
-          <img src={family.photo} alt={family.fallen} />
-        ) : (
-          <img className="fallen-candle" src={candle} alt="" />
-        )}
-      </div>
-      <p className="fallen-label">{t('לזכר', 'In memory of')}</p>
-      <h2 className="fallen-name">{family.fallen || family.name}</h2>
-      <p className="fallen-family">{family.name}</p>
-      <button className="fallen-toggle" aria-expanded={more} onClick={() => setMore((v) => !v)}>
-        {more ? t('הסתרת הפרטים', 'Hide details') : t('פרטים נוספים', 'More details')}
-      </button>
-      <div className={`fallen-more ${more ? 'is-open' : ''}`}>
-        {family.city && <p className="fallen-meta">{family.city}</p>}
-        {d && (
-          <p className="fallen-meta">
-            נפל ביום {hebrewDateStr(d)}
-            <br />
-            {gregDateStr(d)}
-          </p>
-        )}
-        <p className="fallen-bio">
-          {family.bio ||
-            t('הסיפור המלא והתמונה יתווספו כאן באישור המשפחה.', "The full story and photo will be added here with the family's approval.")}
-        </p>
-        <a className="fallen-link" href="https://www.izkor.gov.il/" target="_blank" rel="noreferrer">
-          {t('לאתר יזכור', 'Visit Izkor')} ↗
-        </a>
-      </div>
+    <div className="fallen-cards">
+      {family.fallen.map((person, i) => (
+        <FallenCard key={i} person={person} familyName={family.name} />
+      ))}
     </div>
   )
 }
 
 export function Studio() {
   const { t, lang } = useI18n()
-  const { familyId } = useParams()
+  const { familyId: requestedId } = useParams()
+  const familyId = requestedId && (mergedFamilyIds[requestedId] ?? requestedId)
   const { families, addLetter } = useStore()
   const navigate = useNavigate()
 
@@ -130,7 +137,7 @@ export function Studio() {
   }, [tab])
 
   const greeting = useMemo(() => greetingFor(family, lang === 'en'), [family, lang])
-  const prompts = useMemo(() => writingPrompts(family?.fallen || null), [family])
+  const prompts = useMemo(() => writingPrompts(calledNames(family)), [family])
 
   const currentTheme = [...themes, blankTheme].find((x) => x.id === design.themeId)!
   const currentFont = fonts.find((f) => f.id === design.fontId) ?? fonts[0]

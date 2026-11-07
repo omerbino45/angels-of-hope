@@ -121,9 +121,7 @@ export const inkColors = [
 export const penColors = ['#0f2d5e', '#2563a8', '#c9a84c', '#c0392b', '#2f7a3f', '#0d0d0d', '#ffffff']
 export const penWidths = [3, 6, 12]
 
-export function writingPrompts(fallen: string | null) {
-  // A nickname in parentheses is what the person went by, like מוטי in "מרדכי (מוטי) שמיר".
-  const firstName = fallen?.match(/\((.+?)\)/)?.[1] ?? fallen?.split(' ')[0]
+export function writingPrompts(firstName: string | null) {
   return [
     { he: 'קוראים לי ___, ורציתי שתדעו ש...', en: 'My name is ___, and I wanted you to know that...' },
     { he: `כששמעתי על ${firstName ?? 'הגיבורים'}, הדבר שהכי נגע בי היה...`, en: `When I heard about ${firstName ?? 'the heroes'}, what touched me most was...` },
