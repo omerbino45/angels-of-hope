@@ -5,6 +5,7 @@ import { CONTACT_EMAIL } from '../data/contact'
 import { useI18n } from '../i18n'
 import { gregDateStr, hebrewDateStr, parseGregDate } from '../lib/dates'
 import { useStore } from '../store'
+import { distinct, fallenLabel } from '../data/families'
 import type { Family } from '../types'
 import logo from '../assets/logo.jpeg'
 import g1 from '../assets/gallery-1.jpeg'
@@ -43,17 +44,23 @@ const partners = [
 
 function FamilyCard({ family }: { family: Family }) {
   const { t } = useI18n()
-  const d = parseGregDate(family.date)
+  const label = fallenLabel(family)
+  const several = family.fallen.length > 1
   return (
     <div className="fcard">
       <div className="fname">{family.name}</div>
-      {family.fallen && <div className="family-fallen">{t('לזכר', 'In memory of')}: {family.fallen}</div>}
-      {d && (
-        <div className="family-date">
-          <span className="heb">נפל ביום {hebrewDateStr(d)}</span>
-          <span className="greg">{gregDateStr(d)}</span>
-        </div>
-      )}
+      {label && <div className="family-fallen">{t('לזכר', 'In memory of')}: {label}</div>}
+      {distinct(family, 'date').map((date) => {
+        const d = parseGregDate(date)
+        return (
+          d && (
+            <div className="family-date" key={date}>
+              <span className="heb">{several ? 'נפלו' : 'נפל'} ביום {hebrewDateStr(d)}</span>
+              <span className="greg">{gregDateStr(d)}</span>
+            </div>
+          )
+        )
+      })}
       <div className="fline" />
     </div>
   )

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { GENERAL_ID } from '../data/families'
+import { distinct, fallenLabel, familySearchText, GENERAL_ID } from '../data/families'
 import { useI18n } from '../i18n'
 import { gregDateStr, parseGregDate } from '../lib/dates'
 import { useStore } from '../store'
@@ -16,7 +16,7 @@ export function Chooser() {
   const results = useMemo(() => {
     const q = normalize(query)
     if (!q) return families
-    return families.filter((f) => normalize(`${f.fallen} ${f.name} ${f.city}`).includes(q))
+    return families.filter((f) => normalize(familySearchText(f)).includes(q))
   }, [families, query])
 
   const writeToRandom = () => {
@@ -69,14 +69,12 @@ export function Chooser() {
         ) : (
           <div className="family-grid">
             {results.map((f) => {
-              const d = parseGregDate(f.date)
+              const dates = distinct(f, 'date').map(parseGregDate).filter((d) => d !== null).map(gregDateStr)
               return (
                 <Link className="family-tile" to={`/write/${f.id}`} key={f.id}>
-                  <span className="tile-name">{f.fallen || f.name}</span>
+                  <span className="tile-name">{fallenLabel(f) || f.name}</span>
                   <span className="tile-family">{f.name}</span>
-                  <span className="tile-meta">
-                    {[f.city, d && gregDateStr(d)].filter(Boolean).join(' · ')}
-                  </span>
+                  <span className="tile-meta">{[...distinct(f, 'city'), ...dates].join(' · ')}</span>
                   <span className="tile-action">{t('כתבו מכתב ←', 'Write a letter →')}</span>
                 </Link>
               )

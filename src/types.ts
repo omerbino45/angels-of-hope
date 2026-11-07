@@ -1,11 +1,19 @@
+export interface Fallen {
+  name: string
+  city: string
+  /** D.M.YY or D.M.YYYY */
+  date: string
+  /** The person's own page on izkor.gov.il */
+  izkor?: string
+  bio?: string
+  photo?: string
+}
+
 export interface Family {
   id: string
   name: string
-  fallen: string
-  city: string
-  date: string
-  bio?: string
-  photo?: string
+  /** Usually one person; brothers who fell are listed together under one family. */
+  fallen: Fallen[]
   acceptsLetters: boolean
 }
 
