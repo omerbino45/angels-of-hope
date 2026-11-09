@@ -3,13 +3,13 @@ import { Link, useNavigate } from 'react-router-dom'
 import { distinct, fallenLabel, familySearchText, GENERAL_ID } from '../data/families'
 import { useI18n } from '../i18n'
 import { gregDateStr, parseGregDate } from '../lib/dates'
-import { useStore } from '../store'
+import { usePublicFamilies } from '../store'
 
 const normalize = (s: string) => s.replace(/["'׳״()]/g, '').toLowerCase().trim()
 
 export function Chooser() {
   const { t } = useI18n()
-  const { families } = useStore()
+  const families = usePublicFamilies()
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
 

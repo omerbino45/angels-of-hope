@@ -12,7 +12,8 @@ import { patterns, blankTheme, closestWeight, fontWeights, fonts, penColors, pen
 import { useI18n } from '../i18n'
 import { gregDateStr, hebrewDateStr, parseGregDate } from '../lib/dates'
 import { downloadPng, fetchSpotifyCode, fetchSpotifyInfo, parseSpotifyUrl, readImage } from '../lib/export'
-import { useStore } from '../store'
+import { sendLetter } from '../lib/db'
+import { usePublicFamilies } from '../store'
 import type { Fallen, Family, LetterDesign, LetterItem, StickerRef } from '../types'
 import candle from '../assets/stickers/icons/candle.svg'
 import heart from '../assets/stickers/icons/heart-blue.svg'
@@ -87,7 +88,7 @@ export function Studio() {
   const { t, lang } = useI18n()
   const { familyId: requestedId } = useParams()
   const familyId = requestedId && (mergedFamilyIds[requestedId] ?? requestedId)
-  const { families, addLetter } = useStore()
+  const families = usePublicFamilies()
   const navigate = useNavigate()
 
   const isGeneral = familyId === GENERAL_ID
@@ -122,6 +123,7 @@ export function Studio() {
   const [formError, setFormError] = useState('')
   const [signoff, setSignoff] = useState('')
   const [sent, setSent] = useState(false)
+  const [sending, setSending] = useState(false)
   const [exporting, setExporting] = useState(false)
 
   const exportRef = useRef<HTMLDivElement>(null)
@@ -290,7 +292,7 @@ export function Studio() {
     setSubmitOpen(true)
   }
 
-  const submit = () => {
+  const submit = async () => {
     if (!writer.trim()) {
       setFormError(t('נא למלא שם.', 'Please enter your name.'))
       return
@@ -307,20 +309,34 @@ export function Studio() {
       setFormError(t('מספר הטלפון לא נראה תקין.', "That phone number doesn't look right."))
       return
     }
-    addLetter({
-      id: newId(),
-      familyId: family?.id ?? GENERAL_ID,
-      greeting,
-      text,
-      design,
-      writer: writer.trim(),
-      email: email.trim(),
-      phone: phone.trim(),
-      isPublic,
-      signature,
-      status: 'new',
-      createdAt: Date.now(),
-    })
+    if (family && !family.acceptsLetters) {
+      setFormError(t('המשפחה הזו לא מקבלת מכתבים כרגע. אפשר לכתוב מכתב כללי למשפחות.', "This family isn't receiving letters right now. You can write a general letter to the families."))
+      return
+    }
+    setSending(true)
+    setFormError('')
+    try {
+      await sendLetter({
+        id: newId(),
+        familyId: family?.id ?? GENERAL_ID,
+        greeting,
+        text,
+        design,
+        writer: writer.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        isPublic,
+        signature,
+        status: 'new',
+        createdAt: Date.now(),
+      })
+    } catch {
+      // The letter stays on the page, so trying again sends the same letter.
+      setFormError(t('השליחה לא הצליחה. המכתב שלכם עדיין כאן, נסו שוב בעוד רגע.', "Sending didn't work. Your letter is still here, please try again in a moment."))
+      return
+    } finally {
+      setSending(false)
+    }
     setSubmitOpen(false)
     setSent(true)
     window.scrollTo({ top: 0 })
@@ -654,8 +670,8 @@ export function Studio() {
             <span>{t('אפשר להציג את המכתב גם לאחרים, באישור המשפחה', 'This letter may also be shown to others, with the family\'s approval')}</span>
           </label>
           {formError && <p className="form-error" role="alert">{formError}</p>}
-          <button className="form-submit" onClick={submit}>
-            {t('שלחו את המכתב', 'Send the Letter')}
+          <button className="form-submit" disabled={sending} onClick={submit}>
+            {sending ? t('שולחים...', 'Sending...') : t('שלחו את המכתב', 'Send the Letter')}
           </button>
           </div>
           </div>

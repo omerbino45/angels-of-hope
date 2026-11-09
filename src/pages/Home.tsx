@@ -4,7 +4,7 @@ import { Modal } from '../components/Modal'
 import { CONTACT_EMAIL } from '../data/contact'
 import { useI18n } from '../i18n'
 import { gregDateStr, hebrewDateStr, parseGregDate } from '../lib/dates'
-import { useStore } from '../store'
+import { usePublicFamilies } from '../store'
 import { distinct, fallenLabel } from '../data/families'
 import type { Family } from '../types'
 import logo from '../assets/logo.jpeg'
@@ -68,7 +68,7 @@ function FamilyCard({ family }: { family: Family }) {
 
 export function Home() {
   const { t } = useI18n()
-  const { families } = useStore()
+  const families = usePublicFamilies()
   const [lightbox, setLightbox] = useState<string | null>(null)
   const [joinOpen, setJoinOpen] = useState(false)
 

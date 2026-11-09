@@ -185,10 +185,8 @@ footer strong{color:rgba(255,255,255,0.9);}
 .tile-meta{font-size:12px;color:var(--text-muted);margin-top:2px;}
 .tile-action{font-size:13px;font-weight:500;color:var(--blue);margin-top:10px;}
 .tile-count{font-size:13px;font-weight:700;color:var(--blue);margin-top:10px;}
-.is-sample{background:var(--cream);border-style:dashed;}
 
 /* Admin */
-.demo-note{background:#fdf6e3;border:1px solid var(--gold);border-radius:10px;padding:12px 16px;font-size:13px;color:#5c4a14;line-height:1.6;margin-bottom:22px;}
 .admin-tabs{margin-bottom:22px;}
 .admin-search{max-width:420px;margin-bottom:20px;}
 .admin-family-actions{margin:0 0 20px;}
@@ -392,7 +390,15 @@ footer strong{color:rgba(255,255,255,0.9);}
 @keyframes sealIn{from{opacity:0;transform:translateX(-50%) scale(1.8);}to{opacity:1;transform:translateX(-50%) scale(1);}}
 
 /* Admin additions */
-.admin-stats{font-size:14px;color:var(--text-mid);margin-bottom:16px;}
+.admin-stats-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:16px;}
+.admin-stats{font-size:14px;color:var(--text-mid);margin:0;margin-inline-end:auto;}
+.save-state{font-size:13px;color:var(--text-muted);margin:0;align-self:center;}
+.save-state-saved{color:#2f7a3f;}
+.save-state-error{color:var(--danger);}
+.admin-google{margin-top:4px;}
+.admin-password-login{margin-top:18px;font-size:14px;color:var(--text-mid);}
+.admin-password-login summary{cursor:pointer;padding:6px 0;}
+.admin-password-login form{margin-top:10px;}
 .tile-new{color:var(--gold);font-weight:700;margin-inline-start:6px;}
 .status-select{border:1.5px solid rgba(37,99,168,0.2);border-radius:8px;padding:0 6px;min-height:40px;font-size:13px;background:var(--cream);color:var(--text-dark);}
 .letter-row-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}

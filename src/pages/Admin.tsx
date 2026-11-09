@@ -1,10 +1,13 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { Session } from '@supabase/supabase-js'
 import QRCode from 'qrcode'
 import { LetterPaper } from '../components/LetterPaper'
 import { Modal } from '../components/Modal'
-import { emptyFallen, fallenLabel, familySearchText, GENERAL_ID, sampleFamily } from '../data/families'
+import { emptyFallen, fallenLabel, familySearchText, GENERAL_ID } from '../data/families'
 import { useI18n } from '../i18n'
+import { exportLetters, loadLetters, updateLetterStatus, uploadFallenPhoto } from '../lib/db'
 import { downloadPng, readImage } from '../lib/export'
+import { supabase } from '../lib/supabase'
 import { useStore } from '../store'
 import type { Fallen, Family, Letter, LetterStatus } from '../types'
 
@@ -79,24 +82,43 @@ function ShareModal({ family, onClose }: { family: Family; onClose: () => void }
   )
 }
 
-function LettersTab({ onView, onPrintAll }: { onView: (letter: Letter) => void; onPrintAll: (letters: Letter[]) => void }) {
+function downloadJson(data: unknown, name: string) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(blob)
+  a.download = name
+  a.click()
+  URL.revokeObjectURL(a.href)
+}
+
+interface LettersTabProps {
+  letters: Letter[]
+  loading: boolean
+  failed: boolean
+  onRefresh: () => void
+  onStatus: (id: string, status: LetterStatus) => void
+  onView: (letter: Letter) => void
+  onPrintAll: (letters: Letter[]) => void
+}
+
+function LettersTab({ letters, loading, failed, onRefresh, onStatus, onView, onPrintAll }: LettersTabProps) {
   const { t } = useI18n()
-  const { families, letters, updateLetter } = useStore()
+  const { families } = useStore()
+  const [exporting, setExporting] = useState(false)
   const [open, setOpen] = useState<Family | null>(null)
   const [sharing, setSharing] = useState<Family | null>(null)
   const [query, setQuery] = useState('')
 
   const cards = useMemo(() => {
     const hasGeneral = letters.some((l) => l.familyId === GENERAL_ID)
-    return [sampleFamily, ...(hasGeneral ? [generalFamily] : []), ...families]
+    return [...(hasGeneral ? [generalFamily] : []), ...families]
   }, [families, letters])
 
   const visible = cards.filter((f) => familySearchText(f).includes(query.trim()))
   const openLetters = open ? letters.filter((l) => l.familyId === open.id) : []
 
-  const real = letters.filter((l) => !l.sample)
-  const waiting = real.filter((l) => l.status === 'new').length
-  const isRealFamily = open && open.id !== sampleFamily.id && open.id !== GENERAL_ID
+  const waiting = letters.filter((l) => l.status === 'new').length
+  const isRealFamily = open && open.id !== GENERAL_ID
 
   const statuses: { value: LetterStatus; he: string; en: string }[] = [
     { value: 'new', he: 'חדש', en: 'New' },
@@ -106,9 +128,31 @@ function LettersTab({ onView, onPrintAll }: { onView: (letter: Letter) => void; 
 
   return (
     <>
-      <p className="admin-stats">
-        {t(`${real.length === 1 ? 'מכתב אחד התקבל' : `${real.length} מכתבים התקבלו`} · ${waiting === 1 ? 'אחד ממתין' : `${waiting} ממתינים`} להדפסה`, `${real.length} ${real.length === 1 ? 'letter' : 'letters'} received · ${waiting} waiting to print`)}
-      </p>
+      <div className="admin-stats-row">
+        <p className="admin-stats">
+          {loading
+            ? t('טוענים מכתבים...', 'Loading letters...')
+            : t(`${letters.length === 1 ? 'מכתב אחד התקבל' : `${letters.length} מכתבים התקבלו`} · ${waiting === 1 ? 'אחד ממתין' : `${waiting} ממתינים`} להדפסה`, `${letters.length} ${letters.length === 1 ? 'letter' : 'letters'} received · ${waiting} waiting to print`)}
+        </p>
+        <button className="btn btn-secondary btn-small" disabled={loading} onClick={onRefresh}>
+          {t('רענון', 'Refresh')}
+        </button>
+        <button
+          className="btn btn-secondary btn-small"
+          disabled={exporting}
+          onClick={async () => {
+            setExporting(true)
+            try {
+              downloadJson(await exportLetters(), `letters-${new Date().toISOString().slice(0, 10)}.json`)
+            } finally {
+              setExporting(false)
+            }
+          }}
+        >
+          {t('גיבוי: הורדת כל המכתבים', 'Backup: download all letters')}
+        </button>
+      </div>
+      {failed && <p className="form-error" role="alert">{t('לא הצלחנו לטעון את המכתבים. נסו לרענן.', "We couldn't load the letters. Try refreshing.")}</p>}
       <input
         className="form-input admin-search"
         type="search"
@@ -123,7 +167,7 @@ function LettersTab({ onView, onPrintAll }: { onView: (letter: Letter) => void; 
           const count = familyLetters.length
           const fresh = familyLetters.filter((l) => l.status === 'new').length
           return (
-            <button className={`family-tile admin-tile ${f.id === sampleFamily.id ? 'is-sample' : ''}`} key={f.id} onClick={() => setOpen(f)}>
+            <button className="family-tile admin-tile" key={f.id} onClick={() => setOpen(f)}>
               <span className="tile-name">{fallenLabel(f) || f.name || t('משפחה חדשה', 'New family')}</span>
               <span className="tile-family">{f.name}</span>
               <span className="tile-count">
@@ -169,7 +213,6 @@ function LettersTab({ onView, onPrintAll }: { onView: (letter: Letter) => void; 
                 <li key={l.id} className="letter-row">
                   <div>
                     <strong>{l.writer}</strong>
-                    {l.sample && <span className="badge">{t('דוגמה', 'Sample')}</span>}
                     {l.isPublic && <span className="badge badge-public">{t('מאושר לפרסום', 'May be public')}</span>}
                     <div className="letter-meta">
                       {new Intl.DateTimeFormat('he-IL').format(l.createdAt)}
@@ -192,7 +235,7 @@ function LettersTab({ onView, onPrintAll }: { onView: (letter: Letter) => void; 
                       className="status-select"
                       aria-label={t('סטטוס המכתב', 'Letter status')}
                       value={l.status}
-                      onChange={(e) => updateLetter(l.id, { status: e.target.value as LetterStatus })}
+                      onChange={(e) => onStatus(l.id, e.target.value as LetterStatus)}
                     >
                       {statuses.map((st) => (
                         <option key={st.value} value={st.value}>
@@ -223,16 +266,13 @@ function LettersTab({ onView, onPrintAll }: { onView: (letter: Letter) => void; 
 
 function FamiliesTab() {
   const { t } = useI18n()
-  const { families, updateFamily, addFamily, removeFamily } = useStore()
+  const { families, familiesLoaded, saveState, updateFamily, addFamily, removeFamily } = useStore()
   const [toDelete, setToDelete] = useState<Family | null>(null)
+  const [photoError, setPhotoError] = useState(false)
 
-  const exportJson = () => {
-    const blob = new Blob([JSON.stringify(families, null, 2)], { type: 'application/json' })
-    const a = document.createElement('a')
-    a.href = URL.createObjectURL(blob)
-    a.download = 'families.json'
-    a.click()
-    URL.revokeObjectURL(a.href)
+  // Editing the built-in copy would overwrite the database with stale data, so it waits for the real list.
+  if (!familiesLoaded) {
+    return <p className="modal-text">{t('טוענים את רשימת המשפחות...', 'Loading the list of families...')}</p>
   }
 
   return (
@@ -241,10 +281,16 @@ function FamiliesTab() {
         <button className="btn btn-primary" onClick={addFamily}>
           + {t('הוספת משפחה', 'Add family')}
         </button>
-        <button className="btn btn-secondary" onClick={exportJson}>
+        <button className="btn btn-secondary" onClick={() => downloadJson(families, 'families.json')}>
           {t('הורדת הרשימה', 'Download the list')}
         </button>
+        <p className={`save-state save-state-${saveState}`} role="status">
+          {saveState === 'saving' && t('שומרים...', 'Saving...')}
+          {saveState === 'saved' && t('השינויים נשמרו ✓', 'Changes saved ✓')}
+          {saveState === 'error' && t('השמירה נכשלה. בדקו את החיבור ונסו לשנות שוב.', 'Saving failed. Check the connection and edit again.')}
+        </p>
       </div>
+      {photoError && <p className="form-error" role="alert">{t('העלאת התמונה נכשלה.', 'Uploading the photo failed.')}</p>}
       <div className="family-rows">
         {families.map((f) => (
           <div className="family-row" key={f.id}>
@@ -280,11 +326,13 @@ function FamiliesTab() {
                           const file = e.target.files?.[0]
                           e.target.value = ''
                           if (!file) return
+                          setPhotoError(false)
                           try {
                             const { src } = await readImage(file, 600)
-                            setPerson({ photo: src })
+                            const { path, url } = await uploadFallenPhoto(src)
+                            setPerson({ photo: url, photoPath: path })
                           } catch {
-                            // An unreadable file leaves the current photo in place.
+                            setPhotoError(true)
                           }
                         }}
                       />
@@ -337,68 +385,96 @@ function FamiliesTab() {
   )
 }
 
-// A placeholder gate until there is a server: these values ship in the page's code, so it does not protect real data.
-const ADMIN_USER = 'admin'
-const ADMIN_PASSWORD = 'admin'
-const SESSION_KEY = 'aoh-admin'
-
-function readSession() {
-  try {
-    return sessionStorage.getItem(SESSION_KEY) === '1'
-  } catch {
-    return false
-  }
-}
-
-function writeSession(signedIn: boolean) {
-  try {
-    if (signedIn) sessionStorage.setItem(SESSION_KEY, '1')
-    else sessionStorage.removeItem(SESSION_KEY)
-  } catch {
-    // Without storage the sign-in simply lasts until the page reloads.
-  }
-}
-
-function AdminLogin({ onSignIn }: { onSignIn: () => void }) {
+function AdminLogin() {
   const { t } = useI18n()
-  const [user, setUser] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [failed, setFailed] = useState(false)
+  const [busy, setBusy] = useState(false)
 
   return (
     <section className="admin-login">
-      <form
-        className="admin-login-card"
-        onSubmit={(e) => {
-          e.preventDefault()
-          if (user.trim() === ADMIN_USER && password === ADMIN_PASSWORD) onSignIn()
-          else setFailed(true)
-        }}
-      >
+      <div className="admin-login-card">
         <h1 className="admin-login-title">{t('כניסה לניהול', 'Admin sign-in')}</h1>
-        <div className="form-group">
-          <label className="form-label" htmlFor="admin-user">{t('שם משתמש', 'Username')}</label>
-          <input id="admin-user" className="form-input" dir="ltr" autoComplete="username" autoCapitalize="off" spellCheck={false} autoFocus value={user} onChange={(e) => { setUser(e.target.value); setFailed(false) }} />
-        </div>
-        <div className="form-group">
-          <label className="form-label" htmlFor="admin-password">{t('סיסמה', 'Password')}</label>
-          <input id="admin-password" className="form-input" type="password" dir="ltr" autoComplete="current-password" value={password} onChange={(e) => { setPassword(e.target.value); setFailed(false) }} />
-        </div>
-        {failed && <p className="form-error" role="alert">{t('שם המשתמש או הסיסמה שגויים', 'Wrong username or password')}</p>}
-        <button className="form-submit" type="submit">{t('כניסה', 'Sign in')}</button>
-      </form>
+        <button
+          className="form-submit admin-google"
+          onClick={() => supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/admin` } })}
+        >
+          {t('כניסה עם Google', 'Sign in with Google')}
+        </button>
+        <details className="admin-password-login">
+          <summary>{t('כניסה עם מייל וסיסמה', 'Sign in with email and password')}</summary>
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault()
+              setBusy(true)
+              const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
+              setBusy(false)
+              setFailed(Boolean(error))
+            }}
+          >
+            <div className="form-group">
+              <label className="form-label" htmlFor="admin-email">{t('מייל', 'Email')}</label>
+              <input id="admin-email" className="form-input" type="email" dir="ltr" autoComplete="username" value={email} onChange={(e) => { setEmail(e.target.value); setFailed(false) }} />
+            </div>
+            <div className="form-group">
+              <label className="form-label" htmlFor="admin-password">{t('סיסמה', 'Password')}</label>
+              <input id="admin-password" className="form-input" type="password" dir="ltr" autoComplete="current-password" value={password} onChange={(e) => { setPassword(e.target.value); setFailed(false) }} />
+            </div>
+            {failed && <p className="form-error" role="alert">{t('המייל או הסיסמה שגויים', 'Wrong email or password')}</p>}
+            <button className="btn btn-secondary" type="submit" disabled={busy}>{t('כניסה', 'Sign in')}</button>
+          </form>
+        </details>
+      </div>
+    </section>
+  )
+}
+
+function NotAdmin({ email }: { email?: string }) {
+  const { t } = useI18n()
+  return (
+    <section className="admin-login">
+      <div className="admin-login-card">
+        <h1 className="admin-login-title">{t('אין הרשאת ניהול', 'No admin access')}</h1>
+        <p className="modal-text">
+          {t(`החשבון ${email ?? ''} אינו ברשימת המנהלים.`, `The account ${email ?? ''} is not on the admin list.`)}
+        </p>
+        <button className="btn btn-secondary" onClick={() => supabase.auth.signOut()}>
+          {t('יציאה והתחברות בחשבון אחר', 'Sign out and use another account')}
+        </button>
+      </div>
     </section>
   )
 }
 
 export function Admin() {
-  const [signedIn, setSignedIn] = useState(readSession)
-  const setSession = (next: boolean) => {
-    writeSession(next)
-    setSignedIn(next)
+  const { t } = useI18n()
+  // undefined while Supabase is still reading a saved sign-in or finishing a Google redirect.
+  const [session, setSession] = useState<Session | null | undefined>(undefined)
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setSession(data.session))
+    const { data } = supabase.auth.onAuthStateChange((_event, next) => setSession(next))
+    return () => data.subscription.unsubscribe()
+  }, [])
+
+  useEffect(() => {
+    setIsAdmin(null)
+    if (!session) return
+    supabase.rpc('is_admin').then(({ data, error }) => setIsAdmin(!error && data === true))
+  }, [session])
+
+  if (session === undefined || (session && isAdmin === null)) {
+    return (
+      <section className="admin-login">
+        <p className="modal-text">{t('בודקים כניסה...', 'Checking sign-in...')}</p>
+      </section>
+    )
   }
-  if (!signedIn) return <AdminLogin onSignIn={() => setSession(true)} />
-  return <AdminPanel onSignOut={() => setSession(false)} />
+  if (!session) return <AdminLogin />
+  if (!isAdmin) return <NotAdmin email={session.user.email} />
+  return <AdminPanel onSignOut={() => supabase.auth.signOut()} />
 }
 
 function AdminPanel({ onSignOut }: { onSignOut: () => void }) {
@@ -406,6 +482,36 @@ function AdminPanel({ onSignOut }: { onSignOut: () => void }) {
   const [tab, setTab] = useState<'letters' | 'families'>('letters')
   const [viewing, setViewing] = useState<Letter | null>(null)
   const [batch, setBatch] = useState<Letter[] | null>(null)
+  const [letters, setLetters] = useState<Letter[]>([])
+  const [loading, setLoading] = useState(true)
+  const [failed, setFailed] = useState(false)
+
+  const refresh = useCallback(async () => {
+    setLoading(true)
+    setFailed(false)
+    try {
+      setLetters(await loadLetters())
+    } catch {
+      setFailed(true)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    refresh()
+  }, [refresh])
+
+  const changeStatus = async (id: string, status: LetterStatus) => {
+    const before = letters
+    setLetters((l) => l.map((x) => (x.id === id ? { ...x, status } : x)))
+    try {
+      await updateLetterStatus(id, status)
+    } catch {
+      setLetters(before)
+      setFailed(true)
+    }
+  }
 
   useEffect(() => {
     if (!batch) return
@@ -430,12 +536,6 @@ function AdminPanel({ onSignOut }: { onSignOut: () => void }) {
               {t('יציאה', 'Sign out')}
             </button>
           </div>
-          <p className="demo-note" role="note">
-            {t(
-              'מסך הדגמה: עדיין אין שמירה. שינויים ומכתבים נמחקים ברענון הדף, והמכתבים המסומנים "דוגמה" אינם אמיתיים.',
-              'Demo screen: nothing is saved yet. Changes and letters are lost on refresh, and letters marked "Sample" are not real.',
-            )}
-          </p>
           <div className="chip-row admin-tabs" role="group" aria-label={t('אזורי ניהול', 'Admin sections')}>
             <button className={`chip ${tab === 'letters' ? 'is-active' : ''}`} aria-pressed={tab === 'letters'} onClick={() => setTab('letters')}>
               {t('מכתבים', 'Letters')}
@@ -444,7 +544,11 @@ function AdminPanel({ onSignOut }: { onSignOut: () => void }) {
               {t('עריכת משפחות', 'Edit families')}
             </button>
           </div>
-          {tab === 'letters' ? <LettersTab onView={setViewing} onPrintAll={setBatch} /> : <FamiliesTab />}
+          {tab === 'letters' ? (
+            <LettersTab letters={letters} loading={loading} failed={failed} onRefresh={refresh} onStatus={changeStatus} onView={setViewing} onPrintAll={setBatch} />
+          ) : (
+            <FamiliesTab />
+          )}
         </div>
       </section>
       {viewing && <LetterViewer letter={viewing} onClose={() => setViewing(null)} />}
