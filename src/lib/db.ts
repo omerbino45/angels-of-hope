@@ -177,7 +177,7 @@ export async function loadLetters(): Promise<Letter[]> {
     design: {
       ...r.design,
       items: r.design.items.map((it): LetterItem => {
-        if (it.type === 'image') return { type: 'image', id: it.id, x: it.x, y: it.y, w: it.w, ratio: it.ratio, src: signed.get(it.path) ?? '' }
+        if (it.type === 'image') return { type: 'image', id: it.id, x: it.x, y: it.y, w: it.w, ratio: it.ratio, path: it.path, src: signed.get(it.path) ?? '' }
         if (it.type === 'sticker') {
           // A sticker removed from the gallery since the letter was sent shows as a candle instead of a broken image.
           const sticker = stickerByKey.get(it.key) ?? { key: it.key, src: candle, he: it.he, en: it.en }
@@ -189,8 +189,19 @@ export async function loadLetters(): Promise<Letter[]> {
   }))
 }
 
-export async function updateLetterStatus(id: string, status: LetterStatus) {
-  const { error } = await supabase.from('letters').update({ status }).eq('id', id)
+export async function updateLetterStatus(ids: string[], status: LetterStatus) {
+  const { error } = await supabase.from('letters').update({ status }).in('id', ids)
+  if (error) throw error
+}
+
+/** Removes the letter's photos first, so a failure leaves the letter in place to try again rather than orphaned files. */
+export async function deleteLetter(letter: Letter) {
+  const paths = letter.design.items.flatMap((it) => (it.type === 'image' && it.path ? [it.path] : []))
+  if (paths.length) {
+    const { error } = await supabase.storage.from('letter-images').remove(paths)
+    if (error) throw error
+  }
+  const { error } = await supabase.from('letters').delete().eq('id', letter.id)
   if (error) throw error
 }
 

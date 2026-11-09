@@ -52,9 +52,12 @@ function FallenCard({ person, familyName }: { person: Fallen; familyName: string
             {gregDateStr(d)}
           </p>
         )}
-        <p className="fallen-bio">
-          {person.bio || t('הסיפור המלא והתמונה יתווספו כאן באישור המשפחה.', "The full story and photo will be added here with the family's approval.")}
-        </p>
+        {/* The Izkor page already tells their story, so the placeholder only shows when there is neither. */}
+        {(person.bio || !person.izkor) && (
+          <p className="fallen-bio">
+            {person.bio || t('הסיפור המלא והתמונה יתווספו כאן באישור המשפחה.', "The full story and photo will be added here with the family's approval.")}
+          </p>
+        )}
         <a className="fallen-link" href={person.izkor || 'https://www.izkor.gov.il/'} target="_blank" rel="noreferrer">
           {person.izkor ? t('לדף ההנצחה ביזכור', 'Memorial page on Izkor') : t('לאתר יזכור', 'Visit Izkor')} ↗
         </a>

@@ -13,19 +13,13 @@ export async function downloadPng(el: HTMLElement, filename: string) {
   a.click()
 }
 
-/** Reads an uploaded image, shrinking large photos so a letter stays light in memory. */
-export function readImage(file: File, maxSide = 1400): Promise<{ src: string; ratio: number }> {
+function loadImage(file: File): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file)
     const img = new Image()
     img.onload = () => {
-      const scale = Math.min(1, maxSide / Math.max(img.width, img.height))
-      const canvas = document.createElement('canvas')
-      canvas.width = Math.round(img.width * scale)
-      canvas.height = Math.round(img.height * scale)
-      canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height)
       URL.revokeObjectURL(url)
-      resolve({ src: canvas.toDataURL('image/jpeg', 0.88), ratio: img.width / img.height })
+      resolve(img)
     }
     img.onerror = () => {
       URL.revokeObjectURL(url)
@@ -33,6 +27,43 @@ export function readImage(file: File, maxSide = 1400): Promise<{ src: string; ra
     }
     img.src = url
   })
+}
+
+const blobToDataUrl = (blob: Blob): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result as string)
+    reader.onerror = () => reject(reader.error)
+    reader.readAsDataURL(blob)
+  })
+
+/**
+ * Reads an uploaded image as a JPEG of at most maxSide pixels and maxBytes, so storage space stays predictable.
+ * Quality drops in small steps first, and only a photo still too big after that is made smaller.
+ * Redrawing the photo also drops hidden details like where it was taken.
+ */
+export async function readImage(file: File, { maxSide = 1200, maxBytes = 200 * 1024 } = {}): Promise<{ src: string; ratio: number }> {
+  const img = await loadImage(file)
+  let smallest: Blob | null = null
+  for (const side of [maxSide, Math.round(maxSide * 0.83), Math.round(maxSide * 0.67)]) {
+    const scale = Math.min(1, side / Math.max(img.width, img.height))
+    const canvas = document.createElement('canvas')
+    canvas.width = Math.round(img.width * scale)
+    canvas.height = Math.round(img.height * scale)
+    const ctx = canvas.getContext('2d')!
+    // JPEG has no transparency: without a white base, the clear parts of a PNG would turn black.
+    ctx.fillStyle = '#ffffff'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+    for (let quality = 0.8; quality >= 0.6 - 1e-9; quality -= 0.05) {
+      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', quality))
+      if (!blob) throw new Error('bad image')
+      if (blob.size <= maxBytes) return { src: await blobToDataUrl(blob), ratio: img.width / img.height }
+      smallest = blob
+    }
+  }
+  // A photo this hard to compress keeps the smallest version tried rather than being refused.
+  return { src: await blobToDataUrl(smallest!), ratio: img.width / img.height }
 }
 
 const SPOTIFY = /^https?:\/\/open\.spotify\.com\/(?:intl-[a-z]+\/)?(track|album|playlist)\/([A-Za-z0-9]+)/
