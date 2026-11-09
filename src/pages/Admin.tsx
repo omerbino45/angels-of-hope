@@ -105,6 +105,205 @@ interface LettersTabProps {
 type StatusFilter = 'all' | LetterStatus
 type SortBy = 'list' | 'new' | 'latest'
 
+const statuses: { value: LetterStatus; he: string; en: string }[] = [
+  { value: 'new', he: 'חדש', en: 'New' },
+  { value: 'printed', he: 'הודפס', en: 'Printed' },
+  { value: 'delivered', he: 'נמסר', en: 'Delivered' },
+]
+const filters: { value: StatusFilter; he: string; en: string }[] = [
+  { value: 'all', he: 'כל המכתבים', en: 'All letters' },
+  { value: 'new', he: 'חדשים, ממתינים להדפסה', en: 'New, waiting to print' },
+  { value: 'printed', he: 'הודפסו, ממתינים למסירה', en: 'Printed, waiting to deliver' },
+  { value: 'delivered', he: 'נמסרו', en: 'Delivered' },
+]
+
+
+/** Finds a letter by the writer's name, email or phone. */
+const matchesWriter = (l: Letter, q: string) => {
+  const needle = q.toLowerCase()
+  return [l.writer, l.email, l.phone].some((v) => v.toLowerCase().includes(needle))
+}
+
+interface FamilyLettersModalProps {
+  family: Family
+  letters: Letter[]
+  initialStatus: StatusFilter
+  onClose: () => void
+  onStatus: (ids: string[], status: LetterStatus) => void
+  onDelete: (letter: Letter) => Promise<boolean>
+  onView: (letter: Letter) => void
+  onPrint: (letters: Letter[]) => void
+  onShare: () => void
+}
+
+function FamilyLettersModal({ family, letters, initialStatus, onClose, onStatus, onDelete, onView, onPrint, onShare }: FamilyLettersModalProps) {
+  const { t } = useI18n()
+  const [status, setStatus] = useState<StatusFilter>(initialStatus)
+  const [query, setQuery] = useState('')
+  const [from, setFrom] = useState('')
+  const [to, setTo] = useState('')
+  const [newestFirst, setNewestFirst] = useState(true)
+  const [confirming, setConfirming] = useState<string | null>(null)
+  const [deleteFailed, setDeleteFailed] = useState(false)
+
+  const shown = useMemo(() => {
+    const q = query.trim()
+    // Dates are the writer's local days, so "to" includes the whole of that day.
+    const start = from ? new Date(`${from}T00:00:00`).getTime() : -Infinity
+    const end = to ? new Date(`${to}T23:59:59.999`).getTime() : Infinity
+    return letters
+      .filter((l) => (status === 'all' || l.status === status) && (!q || matchesWriter(l, q)) && l.createdAt >= start && l.createdAt <= end)
+      .sort((a, b) => (newestFirst ? b.createdAt - a.createdAt : a.createdAt - b.createdAt))
+  }, [letters, status, query, from, to, newestFirst])
+  const shownNew = shown.filter((l) => l.status === 'new')
+  const filtered = shown.length !== letters.length
+
+  return (
+    <Modal title={family.name || t('משפחה חדשה', 'New family')} onClose={onClose} wide>
+      <div className="family-modal-actions">
+        {shown.length > 0 && (
+          <button className="btn btn-primary btn-small" onClick={() => onPrint(shown)}>
+            {t(`הדפסת ${shown.length === 1 ? 'המכתב' : `${shown.length} המכתבים`}`, `Print ${shown.length === 1 ? 'the letter' : `${shown.length} letters`}`)}
+          </button>
+        )}
+        {shownNew.length > 0 && (
+          <button className="btn btn-secondary btn-small" onClick={() => onStatus(shownNew.map((l) => l.id), 'printed')}>
+            {t(`סימון ${shownNew.length === 1 ? 'החדש' : `${shownNew.length} החדשים`} כהודפסו`, `Mark ${shownNew.length} new as printed`)}
+          </button>
+        )}
+        {family.id !== GENERAL_ID && (
+          <button className="btn btn-secondary btn-small" onClick={onShare}>
+            {t('קישור ו-QR לכיתה', 'Class link & QR')}
+          </button>
+        )}
+      </div>
+
+      {letters.length > 0 && (
+        <div className="letter-filters">
+          <div className="chip-row" role="group" aria-label={t('סינון לפי סטטוס', 'Filter by status')}>
+            {filters.map((f) => (
+              <button key={f.value} className={`chip ${status === f.value ? 'is-active' : ''}`} aria-pressed={status === f.value} onClick={() => setStatus(f.value)}>
+                {t(f.he, f.en)} ({f.value === 'all' ? letters.length : letters.filter((l) => l.status === f.value).length})
+              </button>
+            ))}
+          </div>
+          <div className="letter-filter-fields">
+            <label className="toolbar-field letter-filter-search">
+              <span className="toolbar-label-visible">{t('שם, מייל או טלפון של הכותב', "Writer's name, email or phone")}</span>
+              <input className="form-input" type="search" value={query} onChange={(e) => setQuery(e.target.value)} />
+            </label>
+            <label className="toolbar-field">
+              <span className="toolbar-label-visible">{t('מתאריך', 'From')}</span>
+              <input className="form-input" type="date" value={from} max={to || undefined} onChange={(e) => setFrom(e.target.value)} />
+            </label>
+            <label className="toolbar-field">
+              <span className="toolbar-label-visible">{t('עד תאריך', 'To')}</span>
+              <input className="form-input" type="date" value={to} min={from || undefined} onChange={(e) => setTo(e.target.value)} />
+            </label>
+            <label className="toolbar-field">
+              <span className="toolbar-label-visible">{t('סדר', 'Order')}</span>
+              <select className="toolbar-select" value={newestFirst ? 'new' : 'old'} onChange={(e) => setNewestFirst(e.target.value === 'new')}>
+                <option value="new">{t('החדשים קודם', 'Newest first')}</option>
+                <option value="old">{t('הישנים קודם', 'Oldest first')}</option>
+              </select>
+            </label>
+          </div>
+          {filtered && (
+            <p className="letter-filter-summary">
+              {t(`מוצגים ${shown.length} מתוך ${letters.length}`, `Showing ${shown.length} of ${letters.length}`)}
+              <button
+                className="btn-link"
+                onClick={() => {
+                  setStatus('all')
+                  setQuery('')
+                  setFrom('')
+                  setTo('')
+                }}
+              >
+                {t('ניקוי הסינון', 'Clear filters')}
+              </button>
+            </p>
+          )}
+        </div>
+      )}
+
+      {deleteFailed && <p className="form-error" role="alert">{t('המחיקה נכשלה. נסו שוב.', 'Deleting failed. Try again.')}</p>}
+      {letters.length === 0 ? (
+        <p className="modal-text">{t('עדיין אין מכתבים למשפחה הזו.', 'No letters for this family yet.')}</p>
+      ) : shown.length === 0 ? (
+        <p className="modal-text">{t('אין מכתבים שמתאימים לסינון.', 'No letters match the filter.')}</p>
+      ) : (
+        <ul className="letter-list">
+          {shown.map((l) => (
+            <li key={l.id} className="letter-row">
+              <div className="letter-info">
+                <strong>{l.writer}</strong>
+                {l.isPublic && <span className="badge badge-public">{t('מאושר לפרסום', 'May be public')}</span>}
+                <div className="letter-meta">
+                  {new Intl.DateTimeFormat('he-IL', { dateStyle: 'short', timeStyle: 'short' }).format(l.createdAt)}
+                  {l.phone && (
+                    <>
+                      {' · '}
+                      <a href={`tel:${l.phone}`} dir="ltr">{l.phone}</a>
+                    </>
+                  )}
+                  {l.email && (
+                    <>
+                      {' · '}
+                      <a href={`mailto:${l.email}`} dir="ltr">{l.email}</a>
+                    </>
+                  )}
+                </div>
+              </div>
+              <div className="letter-row-actions">
+                <select
+                  className="status-select"
+                  aria-label={t('סטטוס המכתב', 'Letter status')}
+                  value={l.status}
+                  onChange={(e) => onStatus([l.id], e.target.value as LetterStatus)}
+                >
+                  {statuses.map((st) => (
+                    <option key={st.value} value={st.value}>
+                      {t(st.he, st.en)}
+                    </option>
+                  ))}
+                </select>
+                <button className="btn btn-secondary btn-small" onClick={() => onView(l)}>
+                  {t('צפייה', 'View')}
+                </button>
+                <button className="btn-link-danger" onClick={() => setConfirming(l.id)}>
+                  {t('מחיקה', 'Delete')}
+                </button>
+              </div>
+              {confirming === l.id && (
+                <div className="letter-confirm" role="alert">
+                  <span>{t('למחוק את המכתב לצמיתות? אי אפשר לשחזר אותו.', 'Delete this letter for good? It cannot be restored.')}</span>
+                  <div className="letter-confirm-actions">
+                    <button
+                      className="btn btn-danger btn-small"
+                      onClick={async () => {
+                        setDeleteFailed(false)
+                        const ok = await onDelete(l)
+                        setConfirming(null)
+                        setDeleteFailed(!ok)
+                      }}
+                    >
+                      {t('כן, למחוק', 'Yes, delete')}
+                    </button>
+                    <button className="btn btn-secondary btn-small" onClick={() => setConfirming(null)}>
+                      {t('ביטול', 'Cancel')}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </Modal>
+  )
+}
+
 function LettersTab({ letters, loading, failed, onRefresh, onStatus, onDelete, onView, onPrintAll }: LettersTabProps) {
   const { t } = useI18n()
   const { families } = useStore()
@@ -115,20 +314,6 @@ function LettersTab({ letters, loading, failed, onRefresh, onStatus, onDelete, o
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
   const [onlyWithLetters, setOnlyWithLetters] = useState(false)
   const [sortBy, setSortBy] = useState<SortBy>('list')
-  const [confirming, setConfirming] = useState<string | null>(null)
-  const [deleteFailed, setDeleteFailed] = useState(false)
-
-  const statuses: { value: LetterStatus; he: string; en: string }[] = [
-    { value: 'new', he: 'חדש', en: 'New' },
-    { value: 'printed', he: 'הודפס', en: 'Printed' },
-    { value: 'delivered', he: 'נמסר', en: 'Delivered' },
-  ]
-  const filters: { value: StatusFilter; he: string; en: string }[] = [
-    { value: 'all', he: 'כל המכתבים', en: 'All letters' },
-    { value: 'new', he: 'חדשים, ממתינים להדפסה', en: 'New, waiting to print' },
-    { value: 'printed', he: 'הודפסו, ממתינים למסירה', en: 'Printed, waiting to deliver' },
-    { value: 'delivered', he: 'נמסרו', en: 'Delivered' },
-  ]
 
   const q = query.trim()
   const shown = useMemo(() => letters.filter((l) => statusFilter === 'all' || l.status === statusFilter), [letters, statusFilter])
@@ -142,7 +327,7 @@ function LettersTab({ letters, loading, failed, onRefresh, onStatus, onDelete, o
     const hasGeneral = letters.some((l) => l.familyId === GENERAL_ID)
     const all = [...(hasGeneral ? [generalFamily] : []), ...families]
     // Searching also finds a family by the name of someone who wrote to it.
-    const matches = all.filter((f) => !q || familySearchText(f).includes(q) || (byFamily.get(f.id) ?? []).some((l) => l.writer.includes(q)))
+    const matches = all.filter((f) => !q || familySearchText(f).includes(q) || (byFamily.get(f.id) ?? []).some((l) => matchesWriter(l, q)))
     const withLetters = onlyWithLetters || statusFilter !== 'all' ? matches.filter((f) => byFamily.has(f.id)) : matches
     const fresh = (f: Family) => (byFamily.get(f.id) ?? []).filter((l) => l.status === 'new').length
     const latest = (f: Family) => Math.max(0, ...(byFamily.get(f.id) ?? []).map((l) => l.createdAt))
@@ -151,10 +336,7 @@ function LettersTab({ letters, loading, failed, onRefresh, onStatus, onDelete, o
     return withLetters
   }, [families, letters, byFamily, q, onlyWithLetters, statusFilter, sortBy])
 
-  const openLetters = open ? byFamily.get(open.id) ?? [] : []
-  const openNew = openLetters.filter((l) => l.status === 'new')
   const waiting = letters.filter((l) => l.status === 'new').length
-  const isRealFamily = open && open.id !== GENERAL_ID
 
   return (
     <>
@@ -226,7 +408,7 @@ function LettersTab({ letters, loading, failed, onRefresh, onStatus, onDelete, o
           const count = familyLetters.length
           const fresh = familyLetters.filter((l) => l.status === 'new').length
           return (
-            <button className="family-tile admin-tile" key={f.id} onClick={() => { setOpen(f); setConfirming(null); setDeleteFailed(false) }}>
+            <button className="family-tile admin-tile" key={f.id} onClick={() => setOpen(f)}>
               <span className="tile-name">{fallenLabel(f) || f.name || t('משפחה חדשה', 'New family')}</span>
               <span className="tile-family">{f.name}</span>
               <span className="tile-count">
@@ -239,116 +421,26 @@ function LettersTab({ letters, loading, failed, onRefresh, onStatus, onDelete, o
       </div>
 
       {open && (
-        <Modal title={open.name || t('משפחה חדשה', 'New family')} onClose={() => setOpen(null)}>
-          {statusFilter !== 'all' && (
-            <p className="form-hint">{t(`מוצגים רק מכתבים בסטטוס: ${filters.find((f) => f.value === statusFilter)!.he}`, `Showing only: ${filters.find((f) => f.value === statusFilter)!.en}`)}</p>
-          )}
-          <div className="family-modal-actions">
-            {openLetters.length > 0 && (
-              <button
-                className="btn btn-primary btn-small"
-                onClick={() => {
-                  setOpen(null)
-                  onPrintAll(openLetters)
-                }}
-              >
-                {t(`הדפסת ${openLetters.length === 1 ? 'המכתב' : `${openLetters.length} המכתבים`}`, `Print ${openLetters.length === 1 ? 'the letter' : `${openLetters.length} letters`}`)}
-              </button>
-            )}
-            {openNew.length > 0 && (
-              <button className="btn btn-secondary btn-small" onClick={() => onStatus(openNew.map((l) => l.id), 'printed')}>
-                {t(`סימון ${openNew.length === 1 ? 'החדש' : `${openNew.length} החדשים`} כהודפסו`, `Mark ${openNew.length} new as printed`)}
-              </button>
-            )}
-            {isRealFamily && (
-              <button
-                className="btn btn-secondary btn-small"
-                onClick={() => {
-                  setSharing(open)
-                  setOpen(null)
-                }}
-              >
-                {t('קישור ו-QR לכיתה', 'Class link & QR')}
-              </button>
-            )}
-          </div>
-          {deleteFailed && <p className="form-error" role="alert">{t('המחיקה נכשלה. נסו שוב.', 'Deleting failed. Try again.')}</p>}
-          {openLetters.length === 0 ? (
-            <p className="modal-text">{t('אין כאן מכתבים שמתאימים לסינון.', 'No letters here match the filter.')}</p>
-          ) : (
-            <ul className="letter-list">
-              {openLetters.map((l) => (
-                <li key={l.id} className="letter-row">
-                  <div>
-                    <strong>{l.writer}</strong>
-                    {l.isPublic && <span className="badge badge-public">{t('מאושר לפרסום', 'May be public')}</span>}
-                    <div className="letter-meta">
-                      {new Intl.DateTimeFormat('he-IL').format(l.createdAt)}
-                      {l.phone && (
-                        <>
-                          {' · '}
-                          <a href={`tel:${l.phone}`} dir="ltr">{l.phone}</a>
-                        </>
-                      )}
-                      {l.email && (
-                        <>
-                          {' · '}
-                          <a href={`mailto:${l.email}`} dir="ltr">{l.email}</a>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                  {confirming === l.id ? (
-                    <div className="letter-row-actions letter-confirm">
-                      <span>{t('למחוק לצמיתות? אי אפשר לשחזר.', 'Delete for good? This cannot be undone.')}</span>
-                      <button
-                        className="btn btn-danger btn-small"
-                        onClick={async () => {
-                          setDeleteFailed(false)
-                          const ok = await onDelete(l)
-                          setConfirming(null)
-                          setDeleteFailed(!ok)
-                        }}
-                      >
-                        {t('כן, למחוק', 'Yes, delete')}
-                      </button>
-                      <button className="btn btn-secondary btn-small" onClick={() => setConfirming(null)}>
-                        {t('ביטול', 'Cancel')}
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="letter-row-actions">
-                      <select
-                        className="status-select"
-                        aria-label={t('סטטוס המכתב', 'Letter status')}
-                        value={l.status}
-                        onChange={(e) => onStatus([l.id], e.target.value as LetterStatus)}
-                      >
-                        {statuses.map((st) => (
-                          <option key={st.value} value={st.value}>
-                            {t(st.he, st.en)}
-                          </option>
-                        ))}
-                      </select>
-                      <button
-                        className="btn btn-secondary btn-small"
-                        onClick={() => {
-                          setOpen(null)
-                          onView(l)
-                        }}
-                      >
-                        {t('צפייה', 'View')}
-                      </button>
-                      <button className="btn-link-danger" onClick={() => setConfirming(l.id)}>
-                        {t('מחיקה', 'Delete')}
-                      </button>
-                    </div>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-        </Modal>
+        <FamilyLettersModal
+          family={open}
+          letters={letters.filter((l) => l.familyId === open.id)}
+          initialStatus={statusFilter}
+          onClose={() => setOpen(null)}
+          onStatus={onStatus}
+          onDelete={onDelete}
+          onView={(l) => {
+            setOpen(null)
+            onView(l)
+          }}
+          onPrint={(list) => {
+            setOpen(null)
+            onPrintAll(list)
+          }}
+          onShare={() => {
+            setSharing(open)
+            setOpen(null)
+          }}
+        />
       )}
       {sharing && <ShareModal family={sharing} onClose={() => setSharing(null)} />}
     </>
