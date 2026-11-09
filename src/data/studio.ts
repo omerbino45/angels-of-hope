@@ -97,11 +97,14 @@ export const stickerCategories = stickerData.map((category) => ({
   stickers: category.stickers.map(
     ({ file, ...rest }): StickerRef => ({
       ...rest,
+      key: file,
       src: stickerFiles[`../assets/stickers/${file}`],
       thumb: stickerThumbs[`../assets/stickers/thumb/${file}`],
     }),
   ),
 }))
+
+export const stickerByKey = new Map(stickerCategories.flatMap((c) => c.stickers).map((s) => [s.key, s]))
 
 export const inkColors = [
   { hex: '#111111', he: 'שחור', en: 'Black' },

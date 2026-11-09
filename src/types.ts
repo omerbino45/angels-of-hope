@@ -1,4 +1,6 @@
 export interface Fallen {
+  /** Set once the person is saved in the database. */
+  id?: string
   name: string
   city: string
   /** D.M.YY or D.M.YYYY */
@@ -6,7 +8,9 @@ export interface Fallen {
   /** The person's own page on izkor.gov.il */
   izkor?: string
   bio?: string
+  /** The photo's public address, and its path in the photos bucket. */
   photo?: string
+  photoPath?: string
 }
 
 export interface Family {
@@ -15,9 +19,12 @@ export interface Family {
   /** Usually one person; brothers who fell are listed together under one family. */
   fallen: Fallen[]
   acceptsLetters: boolean
+  sortOrder?: number
 }
 
 export interface StickerRef {
+  /** The file under assets/stickers, which stays the same between deploys. */
+  key: string
   src: string
   /** A small copy for the gallery, so switching categories stays fast. */
   thumb?: string
@@ -89,5 +96,4 @@ export interface Letter {
   signature: string
   status: LetterStatus
   createdAt: number
-  sample?: boolean
 }

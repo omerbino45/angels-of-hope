@@ -39,9 +39,11 @@ const raw: [string, string, [string, string, string, string?][]][] = [
   ['f35', 'משפחת זירנשיין', [['יבגני זירנשיין', 'זכרון יעקב', '8.12.2024', 'https://www.izkor.gov.il/%D7%99%D7%91%D7%92%D7%A0%D7%99%20%D7%96%D7%99%D7%A0%D7%A8%D7%A9%D7%99%D7%99%D7%9F/en_8fcf1fae60cd0343b5153585d006fc9a']]],
 ]
 
-export const initialFamilies: Family[] = raw.map(([id, name, fallen]) => ({
+/** Shown until the database answers, and if it can't be reached. */
+export const initialFamilies: Family[] = raw.map(([id, name, fallen], i) => ({
   id,
   name,
+  sortOrder: i + 1,
   fallen: fallen.map(([fallenName, city, date, izkor]) => ({ name: fallenName, city, date, izkor })),
   acceptsLetters: true,
 }))
@@ -49,7 +51,7 @@ export const initialFamilies: Family[] = raw.map(([id, name, fallen]) => ({
 /** The Slotki brothers were once listed as two families; an old f16 class link now opens their one family. */
 export const mergedFamilyIds: Record<string, string> = { f16: 'f15' }
 
-export const emptyFallen = (): Fallen => ({ name: '', city: '', date: '' })
+export const emptyFallen = (): Fallen => ({ id: crypto.randomUUID(), name: '', city: '', date: '' })
 
 /** Joins several names the way Hebrew does, "א, ב וג". */
 function joinNames(names: string[]) {
@@ -76,13 +78,5 @@ export const familySearchText = (family: Family) => `${family.name} ${family.fal
 
 /** Every distinct value of one field across a family's fallen, so brothers who fell together show one date. */
 export const distinct = (family: Family, field: 'city' | 'date') => [...new Set(family.fallen.map((p) => p[field]).filter(Boolean))]
-
-/** Admin-only placeholder so the letters screen can be demonstrated without using a real family's name. */
-export const sampleFamily: Family = {
-  id: 'sample',
-  name: 'משפחה לדוגמה',
-  fallen: [{ name: 'שם לדוגמה', city: '', date: '' }],
-  acceptsLetters: false,
-}
 
 export const GENERAL_ID = 'general'
