@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { distinct, fallenLabel, familySearchText, GENERAL_ID } from '../data/families'
+import { distinct, fallenLabel, familySearchText, pickRandomFamily } from '../data/families'
 import { useI18n } from '../i18n'
 import { gregDateStr, parseGregDate } from '../lib/dates'
 import { usePublicFamilies } from '../store'
@@ -19,10 +19,12 @@ export function Chooser() {
     return families.filter((f) => normalize(familySearchText(f)).includes(q))
   }, [families, query])
 
+  const [noneOpen, setNoneOpen] = useState(false)
+
   const writeToRandom = () => {
-    const open = families.filter((f) => f.acceptsLetters)
-    if (open.length === 0) return navigate(`/write/${GENERAL_ID}`)
-    navigate(`/write/${open[Math.floor(Math.random() * open.length)].id}`)
+    const family = pickRandomFamily(families)
+    if (!family) return setNoneOpen(true)
+    navigate(`/write/${family.id}?from=random`)
   }
 
   return (
@@ -40,6 +42,7 @@ export function Chooser() {
           <button className="btn btn-primary btn-large" onClick={writeToRandom}>
             {t('כתבו למשפחה ששמחה לקבל מכתב', 'Write to a family who would love a letter')}
           </button>
+          {noneOpen && <p className="form-error" role="alert">{t('כרגע אין משפחות שמקבלות מכתבים. נסו שוב בקרוב.', 'No family is receiving letters right now. Please try again soon.')}</p>}
         </div>
 
         <div className="chooser-search">
@@ -62,16 +65,16 @@ export function Chooser() {
         {results.length === 0 ? (
           <div className="chooser-empty">
             <p>{t('לא מצאנו את השם הזה ברשימה.', "We couldn't find that name on the list.")}</p>
-            <Link className="btn btn-secondary" to={`/write/${GENERAL_ID}`}>
-              {t('כתבו מכתב כללי למשפחות', 'Write a general letter to the families')}
-            </Link>
+            <button className="btn btn-secondary" onClick={writeToRandom}>
+              {t('כתבו למשפחה ששמחה לקבל מכתב', 'Write to a family who would love a letter')}
+            </button>
           </div>
         ) : (
           <div className="family-grid">
             {results.map((f) => {
               const dates = distinct(f, 'date').map(parseGregDate).filter((d) => d !== null).map(gregDateStr)
               return (
-                <Link className="family-tile" to={`/write/${f.id}`} key={f.id}>
+                <Link className="family-tile" to={`/write/${f.id}?from=list`} key={f.id}>
                   <span className="tile-name">{fallenLabel(f) || f.name}</span>
                   <span className="tile-family">{f.name}</span>
                   <span className="tile-meta">{[...distinct(f, 'city'), ...dates].join(' · ')}</span>

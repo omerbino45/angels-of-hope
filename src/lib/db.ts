@@ -1,6 +1,6 @@
 import candle from '../assets/stickers/icons/candle.svg'
 import { stickerByKey } from '../data/studio'
-import type { Fallen, Family, Letter, LetterDesign, LetterItem, LetterStatus } from '../types'
+import type { Fallen, Family, Letter, LetterDesign, LetterItem, LetterSource, LetterStatus } from '../types'
 import { supabase } from './supabase'
 
 interface FallenRow {
@@ -33,6 +33,7 @@ interface LetterRow {
   phone: string
   is_public: boolean
   status: LetterStatus
+  source: LetterSource | null
   design: StoredDesign
   created_at: string
 }
@@ -145,6 +146,7 @@ export async function sendLetter(letter: Letter) {
     email: letter.email,
     phone: letter.phone,
     is_public: letter.isPublic,
+    source: letter.source ?? null,
     design: { ...letter.design, items } satisfies StoredDesign,
   })
   if (error) throw error
@@ -173,6 +175,7 @@ export async function loadLetters(): Promise<Letter[]> {
     phone: r.phone,
     isPublic: r.is_public,
     status: r.status,
+    source: r.source ?? undefined,
     createdAt: new Date(r.created_at).getTime(),
     design: {
       ...r.design,

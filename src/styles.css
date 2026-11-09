@@ -198,6 +198,8 @@ footer strong{color:rgba(255,255,255,0.9);}
 .letter-meta a{color:var(--blue);display:inline-block;}
 .badge{display:inline-block;background:var(--cream-dark);color:var(--text-mid);font-size:11px;padding:2px 9px;border-radius:20px;margin-inline-start:8px;}
 .badge-public{background:#e6f0fa;color:var(--blue);}
+.badge-source{background:#f3efe4;color:#6a5a2e;}
+.badge-source-unknown{background:var(--cream-dark);color:var(--text-muted);}
 .viewer-actions{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
 .family-rows{display:flex;flex-direction:column;gap:12px;}
 .family-row{display:flex;flex-direction:column;gap:10px;background:var(--white);border:1px solid rgba(37,99,168,0.14);border-radius:12px;padding:12px;}
@@ -392,10 +394,22 @@ footer strong{color:rgba(255,255,255,0.9);}
 @keyframes sealIn{from{opacity:0;transform:translateX(-50%) scale(1.8);}to{opacity:1;transform:translateX(-50%) scale(1);}}
 
 /* Admin additions */
-.admin-filters{margin-bottom:10px;}
-.admin-filter-row{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 16px;margin-bottom:16px;}
-.admin-filter-row .admin-search{flex:1 1 240px;margin:0;}
-.admin-sort{min-width:200px;}
+.letter-filter-fields .admin-sort{flex:0 1 300px;}
+.container > .letter-filters{background:var(--white);border:1px solid rgba(37,99,168,0.14);}
+.filter-bar{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.filter-bar .admin-search{flex:1 1 auto;max-width:none;margin:0;min-width:0;}
+.filter-bar-summary{flex:1;margin:0;font-size:14px;color:var(--text-mid);display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center;}
+.filter-btn{position:relative;display:inline-flex;align-items:center;gap:6px;flex-shrink:0;min-height:44px;padding:0 14px;border-radius:10px;border:1.5px solid rgba(37,99,168,0.2);background:var(--white);color:var(--navy);font-size:14px;font-weight:600;cursor:pointer;}
+.filter-btn:hover{border-color:var(--blue);}
+.filter-btn.is-open{background:var(--cream);border-color:var(--blue);}
+.filter-btn.has-active{border-color:var(--navy);}
+.filter-btn-count{min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--navy);color:#fff;font-size:12px;line-height:20px;text-align:center;}
+.letter-filter-clear{align-self:flex-start;}
+.letter-filter-dates{display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:2 1 260px;min-width:0;}
+.letter-filter-fields input[type=date]{-webkit-appearance:none;appearance:none;display:block;width:100%;min-width:0;text-align:start;}
+.letter-filter-fields input[type=date]::-webkit-date-and-time-value{text-align:start;}
+.admin-stats-actions{display:flex;gap:8px;}
+.btn-icon-text{display:inline-flex;align-items:center;gap:6px;}
 .letter-confirm{flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;padding:10px 12px;border-radius:8px;background:#fdecea;font-size:13.5px;color:var(--danger);}
 .letter-confirm-actions{display:flex;gap:8px;}
 .letter-filters{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;padding:12px;border-radius:10px;background:var(--cream);}
@@ -404,7 +418,6 @@ footer strong{color:rgba(255,255,255,0.9);}
 .letter-filter-fields .form-input,.letter-filter-fields .toolbar-select{width:100%;min-width:0;}
 .letter-filter-fields .letter-filter-search{flex:2 1 220px;}
 .letter-filter-fields .form-input{min-height:40px;padding-block:6px;}
-.letter-filter-summary{font-size:13px;color:var(--text-mid);display:flex;gap:10px;align-items:center;}
 .admin-stats-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:16px;}
 .admin-stats{font-size:14px;color:var(--text-mid);margin:0;margin-inline-end:auto;}
 .save-state{font-size:13px;color:var(--text-muted);margin:0;align-self:center;}
@@ -494,6 +507,11 @@ footer strong{color:rgba(255,255,255,0.9);}
   .letter-row{flex-direction:column;align-items:stretch;}
   .letter-info{flex-basis:auto;}
   .letter-row-actions .status-select{flex:1;}
+  .admin-stats{flex-basis:100%;}
+  .admin-stats-actions{width:100%;}
+  .admin-stats-actions .btn,.family-modal-actions .btn{flex:1 1 auto;}
+  .filter-btn-label{display:none;}
+  .filter-btn{padding:0 12px;}
 }
 @media(max-width:380px){
   .family-grid{grid-template-columns:1fr;}
