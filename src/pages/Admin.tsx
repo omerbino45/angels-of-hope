@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import QRCode from 'qrcode'
-import { FilterButton, RefreshIcon, ShareIcon } from '../components/FilterButton'
+import { FilterButton, FilterPanel, RefreshIcon, ShareIcon } from '../components/FilterButton'
 import { LetterPaper } from '../components/LetterPaper'
 import { Modal } from '../components/Modal'
 import { emptyFallen, fallenLabel, familySearchText } from '../data/families'
 import { useI18n } from '../i18n'
 import { deleteLetter, exportLetters, loadLetters, updateLetterStatus, uploadFallenPhoto } from '../lib/db'
 import { downloadPng, readImage } from '../lib/export'
+import { downloadFamilies } from '../lib/exportFamilies'
 import { supabase } from '../lib/supabase'
 import { useStore } from '../store'
 import type { Fallen, Family, Letter, LetterSource, LetterStatus } from '../types'
@@ -213,7 +214,8 @@ function FamilyLettersModal({ family, letters, initialStatus, onClose, onStatus,
           <FilterButton open={filtersOpen} active={activeFilters} onClick={() => setFiltersOpen((o) => !o)} />
         </div>
       )}
-      {letters.length > 0 && filtersOpen && (
+      {letters.length > 0 && (
+      <FilterPanel open={filtersOpen}>
         <div className="letter-filters">
           <div className="chip-row" role="group" aria-label={t('סינון לפי סטטוס', 'Filter by status')}>
             {filters.map((f) => (
@@ -259,6 +261,7 @@ function FamilyLettersModal({ family, letters, initialStatus, onClose, onStatus,
             </label>
           </div>
         </div>
+      </FilterPanel>
       )}
 
       {deleteFailed && <p className="form-error" role="alert">{t('המחיקה נכשלה. נסו שוב.', 'Deleting failed. Try again.')}</p>}
@@ -417,7 +420,7 @@ function LettersTab({ letters, loading, failed, onRefresh, onStatus, onDelete, o
         />
         <FilterButton open={filtersOpen} active={activeFilters} onClick={() => setFiltersOpen((o) => !o)} />
       </div>
-      {filtersOpen && (
+      <FilterPanel open={filtersOpen}>
         <div className="letter-filters">
           <div className="chip-row" role="group" aria-label={t('סינון לפי סטטוס', 'Filter by status')}>
             {filters.map((f) => {
@@ -458,7 +461,7 @@ function LettersTab({ letters, loading, failed, onRefresh, onStatus, onDelete, o
             </button>
           )}
         </div>
-      )}
+      </FilterPanel>
 
       {cards.length === 0 && !loading && <p className="modal-text">{t('אין מכתבים שמתאימים לסינון.', 'No letters match this filter.')}</p>}
       <div className="family-grid">
@@ -511,6 +514,7 @@ function FamiliesTab() {
   const { families, familiesLoaded, saveState, updateFamily, addFamily, removeFamily } = useStore()
   const [toDelete, setToDelete] = useState<Family | null>(null)
   const [photoError, setPhotoError] = useState(false)
+  const [downloadOpen, setDownloadOpen] = useState(false)
 
   // Editing the built-in copy would overwrite the database with stale data, so it waits for the real list.
   if (!familiesLoaded) {
@@ -523,9 +527,27 @@ function FamiliesTab() {
         <button className="btn btn-primary" onClick={addFamily}>
           + {t('הוספת משפחה', 'Add family')}
         </button>
-        <button className="btn btn-secondary" onClick={() => downloadJson(families, 'families.json')}>
-          {t('הורדת הרשימה', 'Download the list')}
-        </button>
+        <div className="download-menu">
+          <button className="btn btn-secondary" aria-expanded={downloadOpen} onClick={() => setDownloadOpen((o) => !o)}>
+            {t('הורדת הרשימה', 'Download the list')} ▾
+          </button>
+          {downloadOpen && (
+            <div className="download-menu-list" role="menu">
+              {(['xlsx', 'csv', 'json'] as const).map((f) => (
+                <button
+                  key={f}
+                  role="menuitem"
+                  onClick={() => {
+                    setDownloadOpen(false)
+                    downloadFamilies(families, f)
+                  }}
+                >
+                  {f === 'xlsx' ? 'Excel (xlsx)' : f.toUpperCase()}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
         <p className={`save-state save-state-${saveState}`} role="status">
           {saveState === 'saving' && t('שומרים...', 'Saving...')}
           {saveState === 'saved' && t('השינויים נשמרו ✓', 'Changes saved ✓')}
