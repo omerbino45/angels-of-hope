@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { emptyFallen, initialFamilies } from './data/families'
+import { initialFamilies } from './data/families'
 import { deleteFamily, loadFamilies, saveFamily } from './lib/db'
 import type { Family } from './types'
 
@@ -11,7 +11,7 @@ interface Store {
   familiesLoaded: boolean
   saveState: SaveState
   updateFamily: (id: string, patch: Partial<Family>) => void
-  addFamily: () => void
+  addFamily: (draft: Pick<Family, 'name' | 'fallen' | 'acceptsLetters'>) => void
   removeFamily: (id: string) => Promise<void>
 }
 
@@ -66,14 +66,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     [scheduleSave],
   )
 
-  const addFamily = useCallback(() => {
-    const id = `f${Date.now().toString(36)}`
-    setFamilies((f) => [
-      { id, name: '', fallen: [emptyFallen()], acceptsLetters: true, sortOrder: Math.max(0, ...f.map((x) => x.sortOrder ?? 0)) + 1 },
-      ...f,
-    ])
-    scheduleSave(id)
-  }, [scheduleSave])
+  const addFamily = useCallback(
+    (draft: Pick<Family, 'name' | 'fallen' | 'acceptsLetters'>) => {
+      const id = `f${Date.now().toString(36)}`
+      setFamilies((f) => [{ ...draft, id, sortOrder: Math.max(0, ...f.map((x) => x.sortOrder ?? 0)) + 1 }, ...f])
+      scheduleSave(id)
+    },
+    [scheduleSave],
+  )
 
   const removeFamily = useCallback(async (id: string) => {
     window.clearTimeout(timers.current.get(id))

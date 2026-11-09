@@ -509,12 +509,74 @@ function LettersTab({ letters, loading, failed, onRefresh, onStatus, onDelete, o
   )
 }
 
+function AddFamilyModal({ onClose, onAdd }: { onClose: () => void; onAdd: (draft: Pick<Family, 'name' | 'fallen' | 'acceptsLetters'>) => void }) {
+  const { t } = useI18n()
+  const [name, setName] = useState('')
+  const [person, setPerson] = useState({ name: '', city: '', date: '', izkor: '' })
+  const [accepts, setAccepts] = useState(true)
+  // A family without a name or without the name of the fallen is not added.
+  const ready = Boolean(name.trim() && person.name.trim())
+  const field = (key: keyof typeof person) => ({ value: person[key], onChange: (e: React.ChangeEvent<HTMLInputElement>) => setPerson((p) => ({ ...p, [key]: e.target.value })) })
+
+  return (
+    <Modal title={t('הוספת משפחה', 'Add a family')} onClose={onClose}>
+      <form
+        className="add-family-form"
+        onSubmit={(e) => {
+          e.preventDefault()
+          if (!ready) return
+          onAdd({
+            name: name.trim(),
+            acceptsLetters: accepts,
+            fallen: [{ ...emptyFallen(), name: person.name.trim(), city: person.city.trim(), date: person.date.trim(), izkor: person.izkor.trim() || undefined }],
+          })
+        }}
+      >
+        <label className="toolbar-field">
+          <span className="toolbar-label-visible">{t('שם משפחה *', 'Family name *')}</span>
+          <input className="form-input" value={name} onChange={(e) => setName(e.target.value)} autoFocus />
+        </label>
+        <label className="toolbar-field">
+          <span className="toolbar-label-visible">{t('שם הנופל/ת *', 'Name of the fallen *')}</span>
+          <input className="form-input" {...field('name')} />
+        </label>
+        <label className="toolbar-field">
+          <span className="toolbar-label-visible">{t('יישוב', 'Town')}</span>
+          <input className="form-input" {...field('city')} />
+        </label>
+        <label className="toolbar-field">
+          <span className="toolbar-label-visible">{t('תאריך', 'Date')}</span>
+          <input className="form-input" placeholder="D.M.YYYY" dir="ltr" {...field('date')} />
+        </label>
+        <label className="toolbar-field">
+          <span className="toolbar-label-visible">{t('קישור לדף באתר יזכור', 'Link to the Izkor page')}</span>
+          <input className="form-input" type="url" dir="ltr" {...field('izkor')} />
+        </label>
+        <label className="check-row">
+          <input type="checkbox" checked={accepts} onChange={(e) => setAccepts(e.target.checked)} />
+          <span>{t('שמחה לקבל מכתבים', 'Happy to receive letters')}</span>
+        </label>
+        <p className="form-hint">{t('תמונה וסיפור אפשר להוסיף אחרי ההוספה, ברשימה.', 'A photo and a story can be added to the list afterwards.')}</p>
+        <div className="cta-row">
+          <button type="button" className="btn btn-secondary" onClick={onClose}>
+            {t('ביטול', 'Cancel')}
+          </button>
+          <button type="submit" className="btn btn-primary" disabled={!ready}>
+            {t('הוספה', 'Add')}
+          </button>
+        </div>
+      </form>
+    </Modal>
+  )
+}
+
 function FamiliesTab() {
   const { t } = useI18n()
   const { families, familiesLoaded, saveState, updateFamily, addFamily, removeFamily } = useStore()
   const [toDelete, setToDelete] = useState<Family | null>(null)
   const [photoError, setPhotoError] = useState(false)
   const [downloadOpen, setDownloadOpen] = useState(false)
+  const [adding, setAdding] = useState(false)
 
   // Editing the built-in copy would overwrite the database with stale data, so it waits for the real list.
   if (!familiesLoaded) {
@@ -524,7 +586,7 @@ function FamiliesTab() {
   return (
     <>
       <div className="cta-row admin-family-actions">
-        <button className="btn btn-primary" onClick={addFamily}>
+        <button className="btn btn-primary" onClick={() => setAdding(true)}>
           + {t('הוספת משפחה', 'Add family')}
         </button>
         <div className="download-menu">
@@ -626,6 +688,15 @@ function FamiliesTab() {
         ))}
       </div>
 
+      {adding && (
+        <AddFamilyModal
+          onClose={() => setAdding(false)}
+          onAdd={(draft) => {
+            addFamily(draft)
+            setAdding(false)
+          }}
+        />
+      )}
       {toDelete && (
         <Modal title={t('למחוק את המשפחה מהרשימה?', 'Remove this family from the list?')} onClose={() => setToDelete(null)}>
           <p className="modal-text">{toDelete.name}</p>
