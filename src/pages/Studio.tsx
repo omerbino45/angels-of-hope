@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useBlocker, useNavigate, useParams } from 'react-router-dom'
+import { Link, useBlocker, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import QRCode from 'qrcode'
 import { CloseIcon } from '../components/CloseIcon'
 import { InkPicker } from '../components/InkPicker'
 import { autoInk, LetterPaper, PaperBackground, StickerVisual } from '../components/LetterPaper'
 import { Modal } from '../components/Modal'
-import { calledNames, GENERAL_ID, mergedFamilyIds } from '../data/families'
+import { calledNames, LEGACY_GENERAL_ID, mergedFamilyIds, pickRandomFamily } from '../data/families'
 import { getBackgroundImage } from '../data/backgrounds'
 import { backgroundCategories } from '../data/backgrounds'
 import { patterns, blankTheme, closestWeight, fontWeights, fonts, penColors, penWidths, sizes, stickerCategories, themes, writingPrompts } from '../data/studio'
@@ -14,7 +14,7 @@ import { gregDateStr, hebrewDateStr, parseGregDate } from '../lib/dates'
 import { downloadPng, fetchSpotifyCode, fetchSpotifyInfo, parseSpotifyUrl, readImage } from '../lib/export'
 import { sendLetter } from '../lib/db'
 import { usePublicFamilies } from '../store'
-import type { Fallen, Family, LetterDesign, LetterItem, StickerRef } from '../types'
+import type { Fallen, Family, LetterDesign, LetterItem, LetterSource, StickerRef } from '../types'
 import candle from '../assets/stickers/icons/candle.svg'
 import heart from '../assets/stickers/icons/heart-blue.svg'
 
@@ -66,18 +66,7 @@ function FallenCard({ person, familyName }: { person: Fallen; familyName: string
   )
 }
 
-function FallenPanel({ family }: { family: Family | null }) {
-  const { t } = useI18n()
-  if (!family) {
-    return (
-      <div className="fallen-card">
-        <h2 className="fallen-name">{t('מכתב למשפחות', 'A letter to the families')}</h2>
-        <p className="fallen-bio">
-          {t('המכתב הזה יועבר למשפחה ששמחה לקבל מכתב. כתבו מהלב.', 'This letter will reach a family who would love to receive one. Write from the heart.')}
-        </p>
-      </div>
-    )
-  }
+function FallenPanel({ family }: { family: Family }) {
   return (
     <div className="fallen-cards">
       {family.fallen.map((person, i) => (
@@ -87,6 +76,8 @@ function FallenPanel({ family }: { family: Family | null }) {
   )
 }
 
+const sources: LetterSource[] = ['random', 'list', 'link', 'qr', 'direct']
+
 export function Studio() {
   const { t, lang } = useI18n()
   const { familyId: requestedId } = useParams()
@@ -94,7 +85,16 @@ export function Studio() {
   const families = usePublicFamilies()
   const navigate = useNavigate()
 
-  const isGeneral = familyId === GENERAL_ID
+  // The chooser, the class link and its QR code each add ?from=, so the admin can see how a letter came about.
+  const [searchParams] = useSearchParams()
+  const from = searchParams.get('from') as LetterSource | null
+  const source: LetterSource = from && sources.includes(from) ? from : 'direct'
+
+  useEffect(() => {
+    if (familyId !== LEGACY_GENERAL_ID) return
+    const picked = pickRandomFamily(families)
+    if (picked) navigate(`/write/${picked.id}?from=random`, { replace: true })
+  }, [familyId, families, navigate])
   const family = families.find((f) => f.id === familyId) ?? null
 
   const [design, setDesign] = useState<LetterDesign>(() => ({
@@ -157,7 +157,7 @@ export function Studio() {
     return () => window.removeEventListener('beforeunload', warn)
   }, [dirty])
 
-  if (!family && !isGeneral) {
+  if (!family) {
     return (
       <section className="chooser">
         <div className="container center">
@@ -312,8 +312,8 @@ export function Studio() {
       setFormError(t('מספר הטלפון לא נראה תקין.', "That phone number doesn't look right."))
       return
     }
-    if (family && !family.acceptsLetters) {
-      setFormError(t('המשפחה הזו לא מקבלת מכתבים כרגע. אפשר לכתוב מכתב כללי למשפחות.', "This family isn't receiving letters right now. You can write a general letter to the families."))
+    if (!family.acceptsLetters) {
+      setFormError(t('המשפחה הזו לא מקבלת מכתבים כרגע. אפשר לבחור משפחה אחרת.', "This family isn't receiving letters right now. You can choose another family."))
       return
     }
     setSending(true)
@@ -321,7 +321,8 @@ export function Studio() {
     try {
       await sendLetter({
         id: newId(),
-        familyId: family?.id ?? GENERAL_ID,
+        familyId: family.id,
+        source,
         greeting,
         text,
         design,

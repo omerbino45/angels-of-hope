@@ -53,7 +53,7 @@ create table if not exists public.fallen (
 );
 create index if not exists fallen_family_idx on public.fallen (family_id);
 
--- 3. Letters. Anyone can send one, only admins can read it.
+-- 3. Letters. Anyone can send one to a family that accepts letters; only admins can read it.
 create table if not exists public.letters (
   id uuid primary key default gen_random_uuid(),
   family_id text not null,
@@ -65,9 +65,12 @@ create table if not exists public.letters (
   phone text not null default '' check (length(phone) <= 40),
   is_public boolean not null default false,
   status text not null default 'new' check (status in ('new', 'printed', 'delivered')),
+  -- How the writer reached the family: a random pick, the list, a class link or its QR code, or a direct address.
+  source text check (source in ('random', 'list', 'link', 'qr', 'direct')),
   design jsonb not null check (octet_length(design::text) <= 600000),
   created_at timestamptz not null default now()
 );
+alter table public.letters add column if not exists source text check (source in ('random', 'list', 'link', 'qr', 'direct'));
 create index if not exists letters_family_idx on public.letters (family_id, created_at desc);
 
 -- 4. Access rules.
@@ -92,10 +95,7 @@ create policy "admins write fallen" on public.fallen for all to authenticated us
 create policy "anyone sends a letter" on public.letters for insert to anon, authenticated
   with check (
     status = 'new'
-    and (
-      family_id = 'general'
-      or exists (select 1 from public.families f where f.id = family_id and f.accepts_letters)
-    )
+    and exists (select 1 from public.families f where f.id = family_id and f.accepts_letters)
   );
 create policy "admins read letters" on public.letters for select to authenticated using (public.is_admin());
 create policy "admins update letters" on public.letters for update to authenticated using (public.is_admin()) with check (public.is_admin());

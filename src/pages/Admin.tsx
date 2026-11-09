@@ -1,17 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import QRCode from 'qrcode'
+import { FilterButton, RefreshIcon, ShareIcon } from '../components/FilterButton'
 import { LetterPaper } from '../components/LetterPaper'
 import { Modal } from '../components/Modal'
-import { emptyFallen, fallenLabel, familySearchText, GENERAL_ID } from '../data/families'
+import { emptyFallen, fallenLabel, familySearchText } from '../data/families'
 import { useI18n } from '../i18n'
 import { deleteLetter, exportLetters, loadLetters, updateLetterStatus, uploadFallenPhoto } from '../lib/db'
 import { downloadPng, readImage } from '../lib/export'
 import { supabase } from '../lib/supabase'
 import { useStore } from '../store'
-import type { Fallen, Family, Letter, LetterStatus } from '../types'
-
-const generalFamily: Family = { id: GENERAL_ID, name: 'מכתבים כלליים', fallen: [], acceptsLetters: false }
+import type { Fallen, Family, Letter, LetterSource, LetterStatus } from '../types'
 
 function LetterViewer({ letter, onClose }: { letter: Letter; onClose: () => void }) {
   const { t } = useI18n()
@@ -46,17 +45,19 @@ function LetterViewer({ letter, onClose }: { letter: Letter; onClose: () => void
 
 function ShareModal({ family, onClose }: { family: Family; onClose: () => void }) {
   const { t } = useI18n()
-  const url = `${window.location.origin}/write/${family.id}`
+  // The copied link and the QR code mark themselves, so each letter shows which one brought the writer.
+  const base = `${window.location.origin}/write/${family.id}`
+  const url = `${base}?from=link`
   const [qr, setQr] = useState('')
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
-    QRCode.toDataURL(url, { margin: 1, width: 480, color: { dark: '#0f2d5e', light: '#ffffff' } }).then(setQr)
-  }, [url])
+    QRCode.toDataURL(`${base}?from=qr`, { margin: 1, width: 480, color: { dark: '#0f2d5e', light: '#ffffff' } }).then(setQr)
+  }, [base])
 
   const message = `כתבו מכתב למשפחה: ${url}`
   return (
-    <Modal title={t(`קישור לכיתה: ${fallenLabel(family) || family.name}`, `Class link: ${fallenLabel(family) || family.name}`)} onClose={onClose}>
+    <Modal title={t(`קישור/QR: ${fallenLabel(family) || family.name}`, `Link/QR: ${fallenLabel(family) || family.name}`)} onClose={onClose}>
       <div className="share-box">
         <p className="modal-text">
           {t('הקרינו את הקוד בהרצאה או שלחו את הקישור לקבוצה. כל מי שסורק מגיע ישר לדף הכתיבה של המשפחה הזו.', "Show this code during a talk or send the link to a group. Whoever scans it lands straight on this family's writing page.")}
@@ -118,6 +119,16 @@ const filters: { value: StatusFilter; he: string; en: string }[] = [
 ]
 
 
+const sourceLabels: Record<LetterSource | 'unknown', { he: string; en: string }> = {
+  random: { he: 'בחירה אקראית', en: 'Random family' },
+  list: { he: 'נבחרה מהרשימה', en: 'Chosen from the list' },
+  link: { he: 'קישור', en: 'Link' },
+  qr: { he: 'סריקת QR', en: 'QR scan' },
+  direct: { he: 'כניסה ישירה', en: 'Direct address' },
+  unknown: { he: 'מקור לא ידוע', en: 'Unknown source' },
+}
+const sourceOf = (l: Letter) => l.source ?? 'unknown'
+
 /** Finds a letter by the writer's name, email or phone. */
 const matchesWriter = (l: Letter, q: string) => {
   const needle = q.toLowerCase()
@@ -143,6 +154,8 @@ function FamilyLettersModal({ family, letters, initialStatus, onClose, onStatus,
   const [from, setFrom] = useState('')
   const [to, setTo] = useState('')
   const [newestFirst, setNewestFirst] = useState(true)
+  const [source, setSource] = useState<LetterSource | 'unknown' | 'all'>('all')
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const [confirming, setConfirming] = useState<string | null>(null)
   const [deleteFailed, setDeleteFailed] = useState(false)
 
@@ -152,11 +165,19 @@ function FamilyLettersModal({ family, letters, initialStatus, onClose, onStatus,
     const start = from ? new Date(`${from}T00:00:00`).getTime() : -Infinity
     const end = to ? new Date(`${to}T23:59:59.999`).getTime() : Infinity
     return letters
-      .filter((l) => (status === 'all' || l.status === status) && (!q || matchesWriter(l, q)) && l.createdAt >= start && l.createdAt <= end)
+      .filter((l) => (status === 'all' || l.status === status) && (source === 'all' || sourceOf(l) === source) && (!q || matchesWriter(l, q)) && l.createdAt >= start && l.createdAt <= end)
       .sort((a, b) => (newestFirst ? b.createdAt - a.createdAt : a.createdAt - b.createdAt))
-  }, [letters, status, query, from, to, newestFirst])
+  }, [letters, status, source, query, from, to, newestFirst])
   const shownNew = shown.filter((l) => l.status === 'new')
-  const filtered = shown.length !== letters.length
+  const activeFilters = [status !== 'all', source !== 'all', Boolean(query.trim()), Boolean(from || to), !newestFirst].filter(Boolean).length
+  const clearFilters = () => {
+    setStatus('all')
+    setSource('all')
+    setQuery('')
+    setFrom('')
+    setTo('')
+    setNewestFirst(true)
+  }
 
   return (
     <Modal title={family.name || t('משפחה חדשה', 'New family')} onClose={onClose} wide>
@@ -171,14 +192,28 @@ function FamilyLettersModal({ family, letters, initialStatus, onClose, onStatus,
             {t(`סימון ${shownNew.length === 1 ? 'החדש' : `${shownNew.length} החדשים`} כהודפסו`, `Mark ${shownNew.length} new as printed`)}
           </button>
         )}
-        {family.id !== GENERAL_ID && (
-          <button className="btn btn-secondary btn-small" onClick={onShare}>
-            {t('קישור ו-QR לכיתה', 'Class link & QR')}
-          </button>
-        )}
+        <button className="btn btn-secondary btn-small btn-icon-text" onClick={onShare}>
+          <ShareIcon />
+          {t('קישור/QR', 'Link/QR')}
+        </button>
       </div>
 
       {letters.length > 0 && (
+        <div className="filter-bar">
+          <p className="filter-bar-summary">
+            {shown.length === letters.length
+              ? t(letters.length === 1 ? 'מכתב אחד' : `${letters.length} מכתבים`, letters.length === 1 ? '1 letter' : `${letters.length} letters`)
+              : t(`מוצגים ${shown.length} מתוך ${letters.length}`, `Showing ${shown.length} of ${letters.length}`)}
+            {activeFilters > 0 && (
+              <button className="btn-link" onClick={clearFilters}>
+                {t('ניקוי הסינון', 'Clear filters')}
+              </button>
+            )}
+          </p>
+          <FilterButton open={filtersOpen} active={activeFilters} onClick={() => setFiltersOpen((o) => !o)} />
+        </div>
+      )}
+      {letters.length > 0 && filtersOpen && (
         <div className="letter-filters">
           <div className="chip-row" role="group" aria-label={t('סינון לפי סטטוס', 'Filter by status')}>
             {filters.map((f) => (
@@ -192,13 +227,28 @@ function FamilyLettersModal({ family, letters, initialStatus, onClose, onStatus,
               <span className="toolbar-label-visible">{t('שם, מייל או טלפון של הכותב', "Writer's name, email or phone")}</span>
               <input className="form-input" type="search" value={query} onChange={(e) => setQuery(e.target.value)} />
             </label>
+            <div className="letter-filter-dates">
+              <label className="toolbar-field">
+                <span className="toolbar-label-visible">{t('מתאריך', 'From')}</span>
+                <input className="form-input" type="date" value={from} max={to || undefined} onChange={(e) => setFrom(e.target.value)} />
+              </label>
+              <label className="toolbar-field">
+                <span className="toolbar-label-visible">{t('עד תאריך', 'To')}</span>
+                <input className="form-input" type="date" value={to} min={from || undefined} onChange={(e) => setTo(e.target.value)} />
+              </label>
+            </div>
             <label className="toolbar-field">
-              <span className="toolbar-label-visible">{t('מתאריך', 'From')}</span>
-              <input className="form-input" type="date" value={from} max={to || undefined} onChange={(e) => setFrom(e.target.value)} />
-            </label>
-            <label className="toolbar-field">
-              <span className="toolbar-label-visible">{t('עד תאריך', 'To')}</span>
-              <input className="form-input" type="date" value={to} min={from || undefined} onChange={(e) => setTo(e.target.value)} />
+              <span className="toolbar-label-visible">{t('איך הגיעו למשפחה', 'How they reached the family')}</span>
+              <select className="toolbar-select" value={source} onChange={(e) => setSource(e.target.value as typeof source)}>
+                <option value="all">{t('הכול', 'Any')}</option>
+                {(Object.keys(sourceLabels) as (keyof typeof sourceLabels)[])
+                  .filter((k) => letters.some((l) => sourceOf(l) === k))
+                  .map((k) => (
+                    <option key={k} value={k}>
+                      {t(sourceLabels[k].he, sourceLabels[k].en)} ({letters.filter((l) => sourceOf(l) === k).length})
+                    </option>
+                  ))}
+              </select>
             </label>
             <label className="toolbar-field">
               <span className="toolbar-label-visible">{t('סדר', 'Order')}</span>
@@ -208,22 +258,6 @@ function FamilyLettersModal({ family, letters, initialStatus, onClose, onStatus,
               </select>
             </label>
           </div>
-          {filtered && (
-            <p className="letter-filter-summary">
-              {t(`מוצגים ${shown.length} מתוך ${letters.length}`, `Showing ${shown.length} of ${letters.length}`)}
-              <button
-                className="btn-link"
-                onClick={() => {
-                  setStatus('all')
-                  setQuery('')
-                  setFrom('')
-                  setTo('')
-                }}
-              >
-                {t('ניקוי הסינון', 'Clear filters')}
-              </button>
-            </p>
-          )}
         </div>
       )}
 
@@ -239,6 +273,7 @@ function FamilyLettersModal({ family, letters, initialStatus, onClose, onStatus,
               <div className="letter-info">
                 <strong>{l.writer}</strong>
                 {l.isPublic && <span className="badge badge-public">{t('מאושר לפרסום', 'May be public')}</span>}
+                <span className={`badge badge-source badge-source-${sourceOf(l)}`}>{t(sourceLabels[sourceOf(l)].he, sourceLabels[sourceOf(l)].en)}</span>
                 <div className="letter-meta">
                   {new Intl.DateTimeFormat('he-IL', { dateStyle: 'short', timeStyle: 'short' }).format(l.createdAt)}
                   {l.phone && (
@@ -314,6 +349,8 @@ function LettersTab({ letters, loading, failed, onRefresh, onStatus, onDelete, o
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
   const [onlyWithLetters, setOnlyWithLetters] = useState(false)
   const [sortBy, setSortBy] = useState<SortBy>('list')
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const activeFilters = [statusFilter !== 'all', sortBy !== 'list', onlyWithLetters && statusFilter === 'all'].filter(Boolean).length
 
   const q = query.trim()
   const shown = useMemo(() => letters.filter((l) => statusFilter === 'all' || l.status === statusFilter), [letters, statusFilter])
@@ -324,8 +361,7 @@ function LettersTab({ letters, loading, failed, onRefresh, onStatus, onDelete, o
   }, [shown])
 
   const cards = useMemo(() => {
-    const hasGeneral = letters.some((l) => l.familyId === GENERAL_ID)
-    const all = [...(hasGeneral ? [generalFamily] : []), ...families]
+    const all = families
     // Searching also finds a family by the name of someone who wrote to it.
     const matches = all.filter((f) => !q || familySearchText(f).includes(q) || (byFamily.get(f.id) ?? []).some((l) => matchesWriter(l, q)))
     const withLetters = onlyWithLetters || statusFilter !== 'all' ? matches.filter((f) => byFamily.has(f.id)) : matches
@@ -334,7 +370,7 @@ function LettersTab({ letters, loading, failed, onRefresh, onStatus, onDelete, o
     if (sortBy === 'new') return [...withLetters].sort((a, b) => fresh(b) - fresh(a))
     if (sortBy === 'latest') return [...withLetters].sort((a, b) => latest(b) - latest(a))
     return withLetters
-  }, [families, letters, byFamily, q, onlyWithLetters, statusFilter, sortBy])
+  }, [families, byFamily, q, onlyWithLetters, statusFilter, sortBy])
 
   const waiting = letters.filter((l) => l.status === 'new').length
 
@@ -346,37 +382,31 @@ function LettersTab({ letters, loading, failed, onRefresh, onStatus, onDelete, o
             ? t('טוענים מכתבים...', 'Loading letters...')
             : t(`${letters.length === 1 ? 'מכתב אחד התקבל' : `${letters.length} מכתבים התקבלו`} · ${waiting === 1 ? 'אחד ממתין' : `${waiting} ממתינים`} להדפסה`, `${letters.length} ${letters.length === 1 ? 'letter' : 'letters'} received · ${waiting} waiting to print`)}
         </p>
-        <button className="btn btn-secondary btn-small" disabled={loading} onClick={onRefresh}>
-          {t('רענון', 'Refresh')}
-        </button>
-        <button
-          className="btn btn-secondary btn-small"
-          disabled={exporting}
-          onClick={async () => {
-            setExporting(true)
-            try {
-              downloadJson(await exportLetters(), `letters-${new Date().toISOString().slice(0, 10)}.json`)
-            } finally {
-              setExporting(false)
-            }
-          }}
-        >
-          {t('גיבוי: הורדת כל המכתבים', 'Backup: download all letters')}
-        </button>
+        <div className="admin-stats-actions">
+          <button className="btn btn-secondary btn-small btn-icon-text" disabled={loading} onClick={onRefresh}>
+            <RefreshIcon />
+            {t('רענון', 'Refresh')}
+          </button>
+          <button
+            className="btn btn-secondary btn-small"
+            disabled={exporting}
+            title={t('הורדת כל המכתבים לקובץ גיבוי', 'Download all letters as a backup file')}
+            onClick={async () => {
+              setExporting(true)
+              try {
+                downloadJson(await exportLetters(), `letters-${new Date().toISOString().slice(0, 10)}.json`)
+              } finally {
+                setExporting(false)
+              }
+            }}
+          >
+            {t('הורדת גיבוי', 'Download backup')}
+          </button>
+        </div>
       </div>
       {failed && <p className="form-error" role="alert">{t('משהו לא הצליח מול השרת. נסו לרענן.', 'Something failed on the server. Try refreshing.')}</p>}
 
-      <div className="chip-row admin-filters" role="group" aria-label={t('סינון לפי סטטוס', 'Filter by status')}>
-        {filters.map((f) => {
-          const n = f.value === 'all' ? letters.length : letters.filter((l) => l.status === f.value).length
-          return (
-            <button key={f.value} className={`chip ${statusFilter === f.value ? 'is-active' : ''}`} aria-pressed={statusFilter === f.value} onClick={() => setStatusFilter(f.value)}>
-              {t(f.he, f.en)} ({n})
-            </button>
-          )
-        })}
-      </div>
-      <div className="admin-filter-row">
+      <div className="filter-bar">
         <input
           className="form-input admin-search"
           type="search"
@@ -385,21 +415,50 @@ function LettersTab({ letters, loading, failed, onRefresh, onStatus, onDelete, o
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
-        <label className="toolbar-field admin-sort">
-          <span className="toolbar-label-visible">{t('מיון', 'Sort')}</span>
-          <select className="toolbar-select" value={sortBy} onChange={(e) => setSortBy(e.target.value as SortBy)}>
-            <option value="list">{t('לפי סדר הרשימה', 'List order')}</option>
-            <option value="new">{t('הכי הרבה מכתבים חדשים', 'Most new letters')}</option>
-            <option value="latest">{t('המכתב האחרון שהגיע', 'Most recent letter')}</option>
-          </select>
-        </label>
-        {statusFilter === 'all' && (
-          <label className="toolbar-check">
-            <input type="checkbox" checked={onlyWithLetters} onChange={(e) => setOnlyWithLetters(e.target.checked)} />
-            {t('רק משפחות עם מכתבים', 'Only families with letters')}
-          </label>
-        )}
+        <FilterButton open={filtersOpen} active={activeFilters} onClick={() => setFiltersOpen((o) => !o)} />
       </div>
+      {filtersOpen && (
+        <div className="letter-filters">
+          <div className="chip-row" role="group" aria-label={t('סינון לפי סטטוס', 'Filter by status')}>
+            {filters.map((f) => {
+              const n = f.value === 'all' ? letters.length : letters.filter((l) => l.status === f.value).length
+              return (
+                <button key={f.value} className={`chip ${statusFilter === f.value ? 'is-active' : ''}`} aria-pressed={statusFilter === f.value} onClick={() => setStatusFilter(f.value)}>
+                  {t(f.he, f.en)} ({n})
+                </button>
+              )
+            })}
+          </div>
+          <div className="letter-filter-fields">
+            <label className="toolbar-field admin-sort">
+              <span className="toolbar-label-visible">{t('מיון', 'Sort')}</span>
+              <select className="toolbar-select" value={sortBy} onChange={(e) => setSortBy(e.target.value as SortBy)}>
+                <option value="list">{t('לפי סדר הרשימה', 'List order')}</option>
+                <option value="new">{t('הכי הרבה מכתבים חדשים', 'Most new letters')}</option>
+                <option value="latest">{t('המכתב האחרון שהגיע', 'Most recent letter')}</option>
+              </select>
+            </label>
+            {statusFilter === 'all' && (
+              <label className="toolbar-check">
+                <input type="checkbox" checked={onlyWithLetters} onChange={(e) => setOnlyWithLetters(e.target.checked)} />
+                {t('רק משפחות עם מכתבים', 'Only families with letters')}
+              </label>
+            )}
+          </div>
+          {activeFilters > 0 && (
+            <button
+              className="btn-link letter-filter-clear"
+              onClick={() => {
+                setStatusFilter('all')
+                setSortBy('list')
+                setOnlyWithLetters(false)
+              }}
+            >
+              {t('ניקוי הסינון', 'Clear filters')}
+            </button>
+          )}
+        </div>
+      )}
 
       {cards.length === 0 && !loading && <p className="modal-text">{t('אין מכתבים שמתאימים לסינון.', 'No letters match this filter.')}</p>}
       <div className="family-grid">
@@ -725,7 +784,7 @@ function AdminPanel({ onSignOut }: { onSignOut: () => void }) {
           <p className="section-label">{t('ניהול', 'Admin')}</p>
           <div className="admin-title-row">
             <h1 className="section-title">{t('המכתבים לפי משפחה', 'Letters by Family')}</h1>
-            <button className="btn btn-secondary admin-signout" onClick={onSignOut}>
+            <button className="btn btn-secondary btn-small admin-signout" onClick={onSignOut}>
               {t('יציאה', 'Sign out')}
             </button>
           </div>

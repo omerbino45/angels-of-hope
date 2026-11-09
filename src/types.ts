@@ -83,6 +83,9 @@ export interface LetterDesign {
 
 export type LetterStatus = 'new' | 'printed' | 'delivered'
 
+/** How the writer reached the family: a random pick, the list, a class link or its QR code, or an address typed or pasted. */
+export type LetterSource = 'random' | 'list' | 'link' | 'qr' | 'direct'
+
 export interface Letter {
   id: string
   familyId: string
@@ -95,5 +98,7 @@ export interface Letter {
   isPublic: boolean
   signature: string
   status: LetterStatus
+  /** Missing on letters sent before the source was recorded. */
+  source?: LetterSource
   createdAt: number
 }

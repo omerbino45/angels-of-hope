@@ -79,4 +79,10 @@ export const familySearchText = (family: Family) => `${family.name} ${family.fal
 /** Every distinct value of one field across a family's fallen, so brothers who fell together show one date. */
 export const distinct = (family: Family, field: 'city' | 'date') => [...new Set(family.fallen.map((p) => p[field]).filter(Boolean))]
 
-export const GENERAL_ID = 'general'
+/** Letters used to have a "general" address with no family. Old links to it now open a random family instead. */
+export const LEGACY_GENERAL_ID = 'general'
+
+export function pickRandomFamily(families: Family[]) {
+  const open = families.filter((f) => f.acceptsLetters)
+  return open.length ? open[Math.floor(Math.random() * open.length)] : null
+}
