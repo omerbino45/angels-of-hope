@@ -39,3 +39,12 @@ export function ShareIcon() {
     </svg>
   )
 }
+
+/** Slides a filter panel open and shut. It stays mounted so both directions animate; while shut it is hidden from keyboard and screen readers. */
+export function FilterPanel({ open, children }: { open: boolean; children: React.ReactNode }) {
+  return (
+    <div className={`filter-collapse ${open ? 'is-open' : ''}`} aria-hidden={!open} inert={!open}>
+      <div className="filter-collapse-inner">{children}</div>
+    </div>
+  )
+}
