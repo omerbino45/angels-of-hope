@@ -54,7 +54,7 @@ interface ItemBase {
 
 export type LetterItem =
   | (ItemBase & { type: 'sticker'; sticker: StickerRef; /** Degrees clockwise. */ rotation?: number })
-  | (ItemBase & { type: 'image'; src: string; ratio: number })
+  | (ItemBase & { type: 'image'; src: string; ratio: number; /** Where a sent letter's photo is kept in storage. */ path?: string })
   | (ItemBase & { type: 'song'; song: SongData })
 
 export interface Stroke {

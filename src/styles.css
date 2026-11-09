@@ -390,6 +390,11 @@ footer strong{color:rgba(255,255,255,0.9);}
 @keyframes sealIn{from{opacity:0;transform:translateX(-50%) scale(1.8);}to{opacity:1;transform:translateX(-50%) scale(1);}}
 
 /* Admin additions */
+.admin-filters{margin-bottom:10px;}
+.admin-filter-row{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 16px;margin-bottom:16px;}
+.admin-filter-row .admin-search{flex:1 1 240px;margin:0;}
+.admin-sort{min-width:200px;}
+.letter-confirm{flex-wrap:wrap;font-size:13px;color:var(--danger);}
 .admin-stats-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:16px;}
 .admin-stats{font-size:14px;color:var(--text-mid);margin:0;margin-inline-end:auto;}
 .save-state{font-size:13px;color:var(--text-muted);margin:0;align-self:center;}
