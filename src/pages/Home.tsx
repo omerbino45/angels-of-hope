@@ -1,3 +1,4 @@
+import { testimonials } from '../data/testimonials'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Modal } from '../components/Modal'
@@ -229,10 +230,16 @@ export function Home() {
           <p className="section-label">{t('מהמשפחות', 'From the Families')}</p>
           <h2 className="section-title">{t('מה שהמכתבים עושים', 'What the Letters Do')}</h2>
           <div className="testimonial-grid">
-            {[1, 2, 3].map((n) => (
-              <div className="testimonial-slot" key={n}>
-                {t('כאן תופיע תגובה של משפחה', "A family's response will appear here")}
-              </div>
+            {testimonials.map((q, i) => (
+              <figure className="testimonial" key={i} lang="he" dir="rtl">
+                <span className="testimonial-mark" aria-hidden="true">"</span>
+                <blockquote>
+                  {q.paragraphs.map((para, j) => (
+                    <p key={j}>{para}</p>
+                  ))}
+                </blockquote>
+                <figcaption>{t('מתוך תגובה של משפחה', "From a family's reply")}</figcaption>
+              </figure>
             ))}
           </div>
         </div>
